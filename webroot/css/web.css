@@ -152,6 +152,8 @@ html {
   --clr-primary-300: #7e90f9;
   --clr-primary-200: #a2b1ff;
   --clr-primary-100: #c7d3ff;
+  --login-error-clr: rgb(185, 0, 0);
+
 
   /** Some sizing variables */
   --layout-max-width: 1080px;

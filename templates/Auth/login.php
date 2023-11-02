@@ -3,6 +3,11 @@
         <input type="hidden" name="_method" value="post">
         <input type="hidden" name="_csrfToken" value="<?= $token ?>">
         <h1 class="admin-login-page__login-title">Přihlášení do Administrace</h1>
+        <?php if($flashCount > 0){  ?>
+        <div class="admin-login-page__error">
+           <?= $this->Flash->render(); ?>
+        </div>
+        <?php } ?>
         <div class="input-field">
             <label class="input-label" for="username">Uživatelské jméno</label>
             <input id="username" class="input-field__input " name="username" type="text">
