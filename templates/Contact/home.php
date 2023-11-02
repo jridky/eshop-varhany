@@ -1,21 +1,23 @@
 <main class="contact-page container">
     <h1 class="contact-page__heading">Kontaktujte nás</h1>
     <div class="contact-page__container">
-        <form action="" class="contact-page__form">
+        <form action="" class="contact-page__form" method="post">
+            <input type="hidden" name="_method" value="post">
+            <input type="hidden" name="_csrfToken" value="<?= $token ?>">
             <div class="input-field">
-                <label class="input-label" for="name">Jméno:</label>
-                <input id="name" class="input-field__input contact-page__small-input" name="name" type="text" maxlength="100">
+                <label class="input-label" for="name">Jméno</label>
+                <input id="name" class="input-field__input contact-page__small-input" name="name" type="text" maxlength="100" required>
                 <p class="input-field__error-text">&nbsp;</p>
             </div>
             <div class="input-field">
-                <label class="input-label" for="email">Email:</label>
-                <input id="email" class="input-field__input contact-page__small-input" name="email" type="email" maxlength="150">
+                <label class="input-label" for="email">Email</label>
+                <input id="email" class="input-field__input contact-page__small-input" name="email" type="email" maxlength="150" required>
                 <p class="input-field__error-text">&nbsp;</p>
             </div>
-            <label class="input-label">Zpráva:</label>
-            <textarea name="message" class="contact-page__message" rows="7" maxlength="500"></textarea>
+            <label class="input-label">Zpráva</label>
+            <textarea name="message" class="contact-page__message" rows="7" maxlength="500" required></textarea>
             <p class="input-field__error-text"></p>
-            <button class="action-button  contact-page__button">Odeslat</button>
+            <input type="submit" value="Odeslat" class="action-button contact-page__button">
         </form>
         <div class="contact-info">
             <div class="contact-info__items">

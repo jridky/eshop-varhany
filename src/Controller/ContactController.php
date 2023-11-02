@@ -48,6 +48,10 @@ class ContactController extends AppController
 
         $this->set("active", "contact");
 
+        $token = $this->request->getAttribute('csrfToken');
+        $_SESSION['token'] = $token;
+        $this->set("token", $token);
+
         try {
             return $this->render("home");
         } catch (MissingTemplateException $exception) {
