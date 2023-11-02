@@ -60,7 +60,7 @@ return function (RouteBuilder $routes): void {
         $builder->connect('/adopce', ['controller' => 'Adoption', 'action' => 'display']);
         $builder->connect('/login', ['controller' => 'Auth', 'action' => 'login']);
         $builder->connect('/logout', ['controller' => 'Auth', 'action' => 'logout']);
-        $builder->connect('/admin', ['controller' => 'Admin', 'action' => 'display']);
+        $builder->connect('/admin/*', ['controller' => 'Admin', 'action' => 'display']);
 
         /*
          * Connect catchall routes for all controllers.

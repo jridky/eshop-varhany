@@ -769,3 +769,115 @@ code {
   cursor: default;
 }
 
+:root {
+  --data-instructions-clr: rgb(59, 59, 59);
+}
+
+.data-page {
+  margin-top: var(--page-padding-top);
+}
+
+.data-page__form {
+  margin-bottom: 3rem;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+.data-page__heading {
+  font-size: var(--fnt-size-2xl);
+  text-align: center;
+  margin-bottom: 0.75em;
+}
+
+.data-page__file-input {
+  display: none;
+}
+
+.data-page__file-input-label {
+  display: inline-block;
+  padding: 1em;
+  font-weight: 700;
+  cursor: pointer;
+  border-radius: 0.125rem;
+  color: var(--clr-white);
+  background-color: var(--clr-black);
+  transition: background-color 250ms ease;
+}
+
+.data-page__file-input-label:not(.data-page__file-input-label--selected):hover {
+  background-color: var(--clr-dark-grey);
+}
+
+.data-page__file-input-label--selected {
+  background-color: var(--clr-light-grey);
+}
+
+.data-page__text-input {
+  max-width: 20rem;
+}
+
+.data-page__upload-button {
+  margin: 1rem 0 0.5rem 0;
+  max-width: 25rem;
+}
+
+.data-page__spinner {
+  margin: 2rem auto;
+}
+
+.data-page__instructions-text {
+  font-size: var(--fnt-size-lg);
+  color: var(--data-instructions-clr);
+  animation: fadeIn 100ms ease-in;
+}
+
+@keyframes fadeIn {
+  from {
+    filter: opacity(0%);
+  }
+  to {
+    filter: opacity(100%);
+  }
+}
+
+@media only screen and (min-width: 400px) {
+  .data-page__inputs {
+    display: flex;
+    align-items: center;
+  }
+
+  .data-page__file-input-label {
+    margin-right: 2rem;
+  }
+}
+
+.manual-edit__heading {
+  font-size: var(--fnt-size-2xl);
+  font-weight: 900;
+  text-align: center;
+  margin-bottom: 1em;
+}
+
+.manual-edit__item {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 0.75em 1em;
+  border: 1px solid rgb(121, 121, 121);
+  margin: 0 auto;
+  margin-bottom: 0.5em;
+  max-width: 40rem;
+}
+
+.manual-edit__delete-button {
+  flex: 0;
+}
+
+.manual-edit__text {
+  text-align: center;
+  color: var(--clr-primary-700);
+  font-weight: 700;
+  font-size: var(--fnt-size-xl);
+}
+

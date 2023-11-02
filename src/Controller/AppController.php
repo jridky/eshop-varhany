@@ -46,10 +46,10 @@ class AppController extends Controller
         session_start();
 
         $this->loadComponent('Flash');
-        //if($this->getRequest("controller")->getParam('controller') != "IFileUploader"){
+        if($this->getRequest("controller")->getParam('controller') != "Admin"){
             $this->loadComponent('FormProtection');
-        //}
-
+        }
+        
         /* TODO
          * Enable the following component for recommended CakePHP form protection settings.
          * see https://book.cakephp.org/4/en/controllers/components/form-protection.html

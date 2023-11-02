@@ -23,6 +23,8 @@ use Cake\Http\Response;
 use Cake\View\Exception\MissingTemplateException;
 use Cake\Datasource\ConnectionManager;
 use Cake\Filesystem\Folder;
+use \PhpOffice\PhpSpreadsheet\IOFactory;
+
 
 /**
  * Static content controller
@@ -49,18 +51,53 @@ class AdminController extends AppController
     {
 
         if(!isset($_SESSION['access']) || !$_SESSION['access']){
-            if(!isset($_SESSION['access'])){
-                $_SESSION['warningMessage'][] = "Platnost Vašeho přihlášení vypršela. Přihlaste se, prosím, znovu.";
-            } else {
-                $_SESSION['errorMessage'][] = "Nemáte oprávnění pro vstup do interní sekce.";
-            }
+            $_SESSION['errorMessage'][] = "Nemáte oprávnění pro vstup do interní sekce. Nejprve se přihlaste.";
             return $this->redirect("/login/");
         }
 
         $this->viewBuilder()->setLayout('internal');
 
         $connection = ConnectionManager::get('default');
-        $this->set("active", "");
+
+        if(count($path) < 1){
+            $path = array("data");
+        }
+
+        if($path[0] == "." || $path[0] == ".."){
+            throw new NotFoundException();
+        }
+
+        switch($path[0]){
+            case "data":
+                $this->set("active", "data");
+                if(isset($_POST['load'])){
+                    if($_SESSION['token'] == $_POST['_csrfToken'] && $_POST['name'] != ""){
+                        return $this->processCSV($connection);
+                    } else {
+                        $_SESSION['errorMessage'][] = "Chyba zpracování";
+                    }
+                } elseif(isset($_POST['delete'])){
+                    if($_SESSION['token'] == $_POST['_csrfToken'] && is_numeric($_POST['machineId'])){
+                        return $this->deleteMachine($connection);
+                    } else {
+                        $_SESSION['errorMessage'][] = "Chyba zpracování";
+                    }
+                }
+                $this->showData($connection);
+                break;
+            case "pistaly":
+                if(count($path) > 1 && is_numeric($path[1])){
+                    return $this->editUpozorneni($connection, $path[1]);
+                } elseif( count($path) > 3 && $path[1] == "smazat" && is_numeric($path[2]) && $_SESSION['token'] == $path[3]){
+                    return $this->deleteUpozorneni($connection, $path[2]);
+                }
+                $this->upozorneni($connection);
+                break;
+            case "objednavky":
+
+                break;
+            default: break;
+        }
 
         $token = $this->request->getAttribute('csrfToken');
         $_SESSION['token'] = $token;
@@ -69,7 +106,7 @@ class AdminController extends AppController
         $this->set("flashCount", parent::printFlush());
 
         try {
-            return $this->render("index");
+            return $this->render($path[0]);
         } catch (MissingTemplateException $exception) {
             if (Configure::read('debug')) {
                 throw $exception;
@@ -78,5 +115,80 @@ class AdminController extends AppController
         }
 
         return $this->render();
+    }
+
+    public function showData($connection){
+        $machines = $connection->execute("SELECT id, name FROM machine ORDER BY id")->fetchAll("assoc");
+
+        $this->set("machines", $machines);
+    }
+
+    public function processCSV($connection){
+        try{
+            if($_FILES['machine']['name'] != ""){
+                if(strpos($_FILES['machine']['type'], "spreadsheet") === false && strpos($_FILES['machine']['type'], "text/csv") === false && strpos($_FILES['machine']['type'], "excel") === false){
+                    throw new \Exception("file");
+                }
+
+                $check = $connection->execute("SELECT id FROM machine WHERE name like('" . $_POST['name'] . "')")->fetch("assoc");
+
+                if($check != null){
+                    $_SESSION['errorMessage'][] = "Tento název stroje již existuje";
+                    return $this->redirect("/admin/data");
+                }
+                $connection->execute("START TRANSACTION;");
+                $machineId = $connection->execute("INSERT INTO machine (name) VALUES ('" . $_POST['name'] . "')")->lastInsertId();
+                $file = IOFactory::load($_FILES['machine']['tmp_name']);
+                $data = $file->getActiveSheet()->toArray(NULL,TRUE,FALSE,FALSE);
+
+                $tunes = array();
+                //process tunes
+                for($i = 1; $i < sizeof($data[0]); $i++){
+                    $tuneId = $connection->execute('SELECT id FROM tone WHERE name like ("' . $data[0][$i] . '") and machine_id = ' . $machineId)->fetch("assoc");
+                    if($tuneId == null){
+                        $tunes[$i] = $connection->execute('INSERT INTO tone (name, machine_id) VALUES ("' . $data[0][$i] . '", ' . $machineId . ')')->lastInsertId();
+                    } else {
+                        $tunes[$i] = $tuneId['id'];
+                    }
+                }
+
+                for($i = 1; $i < sizeof($data); $i++){
+                    $rankId = 0;
+                    for($j = 0; $j < sizeof($data[$i]); $j++){
+                        if($j == 0){
+                            $rankId = $connection->execute("INSERT INTO rank (machine_id, name) VALUES (" . $machineId . ", '" . $data[$i][$j] . "')")->lastInsertId();
+                        } else {
+                            $connection->execute("INSERT INTO pipe (rank_id, machine_id, tone_id, price, state) VALUES (" . $rankId . ", " . $machineId . ", " . $tunes[$j] . ", " . $data[$i][$j] . ", 0)");
+                        }
+                    } 
+                }
+                $connection->execute("COMMIT;");
+                $_SESSION['successMessage'][] = "CSV úspěšně nahráno";
+            } else {
+                throw new \Exception("no-file");
+            }
+
+        }catch(\Exception $e){
+            switch($e->getMessage()){
+                case "file": $_SESSION['errorMessage'][] = "Špatný typ souboru";
+                            break;
+                case "no-file": $_SESSION['errorMessage'][] = "Není soubor - nejsou data";
+                            break;
+                default: $_SESSION['errorMessage'][] = "CSV nelze zpracovat. Zkontroluj formát soboru." . $e->getMessage();
+            }
+        }
+
+        return $this->redirect("/admin/data");
+    }
+
+    public function deleteMachine($connection){
+
+        $connection->execute("DELETE FROM machine WHERE id = " . $_POST['machineId']);
+        $connection->execute("DELETE FROM pipe WHERE machine_id = " . $_POST['machineId']);
+        $connection->execute("DELETE FROM rank WHERE machine_id = " . $_POST['machineId']);
+        $connection->execute("DELETE FROM tone WHERE machine_id = " . $_POST['machineId']);
+
+        $_SESSION['successMessage'][] = "Celý stroj byl odebrán.";
+        return $this->redirect('/admin/data');
     }
 }
