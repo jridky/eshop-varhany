@@ -46,6 +46,7 @@ class HomePageController extends AppController
     public function display(string ...$path): ?Response
     {
         $this->set("active", "home");
+        $this->set("amount", "0");
 
         try {
             return $this->render("home");
