@@ -1,0 +1,78 @@
+.navbar .nav-brand a { 
+  display: none;
+}
+
+.masthead {
+  background: #FFF;
+  background-image: url("/img/landing-background.png");
+  background-repeat: no-repeat;
+  background-size: cover;
+  background-position-x: right;
+  color: #fff;
+  flex-grow: 1;
+  min-height: 60vh !important;
+  overflow: hidden;
+}
+
+.navbar {
+  background: transparent;
+  transition: all 0.3s ease-out 0s;
+}
+
+.navbar-collapse.show{
+    background: #fff2c6;
+}
+
+.social-icon {
+  display: inline-block;
+  margin: 10px 20px;
+  filter: opacity(50%);
+  -webkit-transition: 0.2s ease-out all .1s;
+  transition: 0.2s ease-out all .1s;
+}
+
+.social-icon:hover {
+  filter: opacity(100%);
+  -webkit-transition: 0.2s ease all;
+  transition: 0.2s ease all;
+}
+
+.heading-text{
+  width: 80vw;
+  display: block;
+  color: #017fff;
+  margin: 0px auto;
+}
+
+.heading-text.h1{
+  font-size: 2rem !important;
+}
+
+.logo{
+  display: none;
+}
+
+@media (min-width: 992px) { 
+
+    .heading-text {
+      width: auto;
+      display: inline-block;
+      vertical-align: middle;
+      padding-left: 3rem;
+    }
+
+    .heading-text.h1 {
+      font-size: 2.5rem !important;
+    }
+
+    .logo {   
+      padding-left: 4rem;
+      width: 11vw;
+      display: inline;
+    }
+
+    .social-icon {
+      display: block;
+      margin: 20px auto;
+    }
+}
