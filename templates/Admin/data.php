@@ -15,6 +15,7 @@
             <div class="input-field">
                 <label class="input-label" for="manualName">Název stroje</label>
                 <input id="manualName" class="input-field__input data-page__text-input" name="name" type="text" required>
+                <p class="input-field__error-text">&nbsp;</p>
             </div>
         </div>
         <input type="submit" class="action-button  data-page__upload-button" name="load" value="Nahrát">

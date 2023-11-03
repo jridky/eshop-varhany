@@ -86,12 +86,13 @@ class AdminController extends AppController
                 $this->showData($connection);
                 break;
             case "pistaly":
+                $this->set("active", "pipes");
                 if(count($path) > 1 && is_numeric($path[1])){
                     return $this->editUpozorneni($connection, $path[1]);
                 } elseif( count($path) > 3 && $path[1] == "smazat" && is_numeric($path[2]) && $_SESSION['token'] == $path[3]){
                     return $this->deleteUpozorneni($connection, $path[2]);
                 }
-                $this->upozorneni($connection);
+                $this->showPipes($connection);
                 break;
             case "objednavky":
 
@@ -144,7 +145,7 @@ class AdminController extends AppController
                 $tunes = array();
                 //process tunes
                 for($i = 1; $i < sizeof($data[0]); $i++){
-                    $tuneId = $connection->execute('SELECT id FROM tone WHERE name like ("' . $data[0][$i] . '") and machine_id = ' . $machineId)->fetch("assoc");
+                    $tuneId = $connection->execute('SELECT id FROM tone WHERE name LIKE BINARY ("' . $data[0][$i] . '") and machine_id = ' . $machineId)->fetch("assoc");
                     if($tuneId == null){
                         $tunes[$i] = $connection->execute('INSERT INTO tone (name, machine_id) VALUES ("' . $data[0][$i] . '", ' . $machineId . ')')->lastInsertId();
                     } else {
@@ -190,5 +191,26 @@ class AdminController extends AppController
 
         $_SESSION['successMessage'][] = "Celý stroj byl odebrán.";
         return $this->redirect('/admin/data');
+    }
+
+    public function showPipes($connection){
+
+        $machines = $connection->execute("SELECT id, name FROM machine order by id")->fetchAll("assoc");
+
+        foreach($machines as $key => $m){
+            $tones = $connection->execute("SELECT id, name FROM tone WHERE machine_id = " . $m['id'] . " ORDER BY id")->fetchAll("assoc");
+            $machines[$key]['tones'] = $tones;
+
+            $ranks = $connection->execute("SELECT id, name FROM rank WHERE machine_id = " . $m['id'] . " ORDER BY name, id")->fetchAll("assoc");
+
+            foreach($ranks as $rkey => $r){
+                $pipes = $connection->execute("SELECT id, FORMAT(price,0,'de_DE') as price, state, owner FROM pipe WHERE machine_id = " . $m['id'] . " AND rank_id = " . $r['id'] . " ORDER BY tone_id")->fetchAll("assoc");
+                $ranks[$rkey]['pipes'] = $pipes;
+            }
+
+            $machines[$key]['ranks'] = $ranks;
+        }
+
+        $this->set("machines", $machines);
     }
 }

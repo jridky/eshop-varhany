@@ -49,7 +49,7 @@
             <nav class="header__nav">
                 <ul class="header__nav-items ">
                     <li><a class="header__nav-item<?= ($active == "orders"?" header__nav-item--active\" aria-current=\"page":"") ?>" href="#/admin/objednavky">Objednávky</a></li>
-                    <li><a class="header__nav-item<?= ($active == "flutes"?" header__nav-item--active\" aria-current=\"page":"") ?>" href="#/admin/pistaly">Píšťaly</a></li>
+                    <li><a class="header__nav-item<?= ($active == "pipes"?" header__nav-item--active\" aria-current=\"page":"") ?>" href="/admin/pistaly">Píšťaly</a></li>
                     <li><a class="header__nav-item<?= ($active == "data"?" header__nav-item--active\" aria-current=\"page":"") ?>" href="/admin/data">Data</a></li>
                     <li><a class="header__nav-item" href="/logout">Odhlásit se</a></li>
                     <li class="header__nav-item header__close-button">Zavřít</li>
