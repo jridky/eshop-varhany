@@ -87,15 +87,11 @@ class AdminController extends AppController
                 break;
             case "pistaly":
                 $this->set("active", "pipes");
-                if(count($path) > 1 && is_numeric($path[1])){
-                    return $this->editUpozorneni($connection, $path[1]);
-                } elseif( count($path) > 3 && $path[1] == "smazat" && is_numeric($path[2]) && $_SESSION['token'] == $path[3]){
-                    return $this->deleteUpozorneni($connection, $path[2]);
-                }
                 $this->showPipes($connection);
                 break;
             case "objednavky":
-
+                $this->set("active", "orders");
+                $this->showOrders($connection);
                 break;
             default: break;
         }
@@ -212,5 +208,9 @@ class AdminController extends AppController
         }
 
         $this->set("machines", $machines);
+    }
+    
+    public function showOrders($connection){
+    
     }
 }

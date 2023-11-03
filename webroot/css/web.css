@@ -2165,3 +2165,124 @@ code {
   }
 }
 
+.orders {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  margin-top: var(--page-padding-top);
+}
+
+.orders__heading {
+  align-self: flex-start;
+  margin-bottom: 0.25em;
+}
+
+.orders__panel {
+  width: 100%;
+}
+
+.orders__error {
+  margin-top: 3rem;
+}
+
+.orders__pre-error {
+  color: var(--clr-primary-500);
+  font-weight: 900;
+}
+
+:root {
+  --table-stripe-clr: #f1f1f1;
+}
+
+.table__wrapper {
+  display: flex;
+  justify-content: center;
+  width: calc(100% - 2rem);
+}
+
+.table__container {
+  overflow-x: auto;
+  box-shadow: 0 0 3px lightgray;
+  border-radius: 5px;
+}
+
+.table {
+  border-collapse: collapse;
+  min-width: calc(var(--layout-max-width) - 3rem);
+  text-align: center;
+  white-space: nowrap;
+}
+
+.table__header {
+  background-color: var(--clr-primary-500);
+  padding: 10px;
+  color: white;
+}
+
+.table__heading,
+.table__cell {
+  padding: 10px;
+}
+
+.table__row:nth-of-type(even) {
+  background-color: var(--table-stripe-clr);
+}
+
+.table__cell {
+  font-weight: 500;
+}
+
+.order-table__table {
+  width: 100%;
+}
+
+.order-table__state {
+  font-weight: 700;
+}
+
+.order-table__state--orange {
+  color: orange;
+}
+
+.order-table__state--red {
+  color: red;
+}
+
+.order-table__state--green {
+  color: green;
+}
+
+.order-table__donator,
+.order-table__payment,
+.order-table__actions {
+  display: flex;
+  justify-content: space-around;
+  align-items: center;
+}
+
+.order-table__pipe-text {
+  color: var(--clr-primary-300);
+  transition: color 100ms ease;
+}
+
+.order-table__pipe-text:hover {
+  color: var(--clr-primary-400);
+}
+
+.order-table__no-data {
+  padding: 0 1rem;
+  margin-top: 3rem;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.order-table__no-data-text {
+  font-size: var(--fnt-size-2xl);
+  font-weight: 500;
+}
+
+.order-table__no-data-icon {
+  margin-right: 2rem;
+}
+

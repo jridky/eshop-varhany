@@ -29,6 +29,10 @@
     <meta name="theme-color" content="#3153b3">
     <link rel="apple-touch-icon" href="/logo192.png">
     <link rel="manifest" href="/manifest.json">
+    <script src="https://code.jquery.com/jquery-3.7.1.min.js" integrity="sha256-/JqT3SQfawRcv/BIHPThkBvs0OEvtFFmqPF/lYI/Cxo=" crossorigin="anonymous"></script>
+    <link rel="stylesheet" href="https://cdn.datatables.net/1.13.6/css/jquery.dataTables.css" />
+  
+<script src="https://cdn.datatables.net/1.13.6/js/jquery.dataTables.js"></script>
   
 
     <?= $this->Html->css('web.css') ?>
@@ -48,7 +52,7 @@
             </a>
             <nav class="header__nav">
                 <ul class="header__nav-items ">
-                    <li><a class="header__nav-item<?= ($active == "orders"?" header__nav-item--active\" aria-current=\"page":"") ?>" href="#/admin/objednavky">Objednávky</a></li>
+                    <li><a class="header__nav-item<?= ($active == "orders"?" header__nav-item--active\" aria-current=\"page":"") ?>" href="/admin/objednavky">Objednávky</a></li>
                     <li><a class="header__nav-item<?= ($active == "pipes"?" header__nav-item--active\" aria-current=\"page":"") ?>" href="/admin/pistaly">Píšťaly</a></li>
                     <li><a class="header__nav-item<?= ($active == "data"?" header__nav-item--active\" aria-current=\"page":"") ?>" href="/admin/data">Data</a></li>
                     <li><a class="header__nav-item" href="/logout">Odhlásit se</a></li>
