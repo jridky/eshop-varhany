@@ -84,7 +84,7 @@ class AdoptionController extends AppController
 
         $this->set("flashCount", parent::printFlush());
                 
-        if(isset($_POST['pipe']) && is_numeric($_POST['pipe'])){
+        if(isset($_SESSION['desiredPipe']) || (isset($_POST['pipe']) && is_numeric($_POST['pipe']))){
             $this->showOrdered($connection);
         } else if(isset($_POST['pipe_id']) && is_numeric($_POST['pipe_id'])){
             return $this->processOrder($connection);
@@ -156,8 +156,16 @@ class AdoptionController extends AppController
     
     public function showOrdered($connection){
 
-        $pipe = $connection->execute("SELECT r.name as rank_name, p.id, price, state, t.name as tone_name FROM pipe as p, rank as r, tone as t WHERE p.id = " . $_POST['pipe'] . " AND p.rank_id = r.id AND p.tone_id = t.id")
+        $pipe_id = -1;
+        if(!isset($_POST['pipe'])){
+            $pipe_id = $_SESSION['desiredPipe'];
+        } else {
+            $pipe_id = $_POST['pipe'];
+        }
+        $pipe = $connection->execute("SELECT r.name as rank_name, p.id, price, state, t.name as tone_name FROM pipe as p, rank as r, tone as t WHERE p.id = " . $pipe_id . " AND p.rank_id = r.id AND p.tone_id = t.id")
             ->fetch("assoc");
+            
+            var_dump($pipe);
 
         if($pipe['state'] == 0){
             $this->set("pipe", $pipe);
@@ -177,7 +185,9 @@ class AdoptionController extends AppController
             return $this->redirect("/adopce");
         } else {
             if(!isset($_POST['consent'])){
-            
+                $_SESSION['errorMessage'][] = "Je nutné udělit souhlas se zpracováním osobních údajů.";
+                $_SESSION['desiredPipe'] = $_POST['pipe_id'];
+                return $this->redirect("/adopce/objednavka");
             } else {
                 if(isset($_POST['firstName'])){
                     if(isset($_POST['firstName']) && trim($_POST['firstName']) != ""
@@ -189,29 +199,98 @@ class AdoptionController extends AppController
                             
                          $connection->execute("UPDATE pipe SET state = 1 WHERE id = " . $_POST['pipe_id']);
                          
-                         $this->sendConfirmation($connection, $orderId);
+//                         $this->sendConfirmation($connection, $orderId);
+                         
+                         if(isset($_POST['confirmation'])){
+                            if(isset($_POST['country']) && trim($_POST['country']) != ""
+                                && isset($_POST['city']) && trim($_POST['city']) != ""
+                                && isset($_POST['postcode']) && trim($_POST['postcode']) != ""
+                                && isset($_POST['address']) && trim($_POST['address']) != ""
+                                && isset($_POST['birthdate']) && trim($_POST['birthdate']) != ""){
+                                
+                                $connection->execute("UPDATE orders SET country=" . parent::sanity($_POST['country']) . ", city=" . parent::sanity($_POST['city']) . ", zip="
+                                        . parent::sanity($_POST['postcode']) . ", address=" . parent::sanity($_POST['address']) . ", birth_date=" . parent::sanity($_POST['birthdate']) . ","
+                                        . " confirmation=1 WHERE id = " . $orderId);
+                            } else {
+                                $_SESSION['errorMessage'][] = "Nevyplnili jste všechna povinná pole pro odelsání potvrzení o daru. Kontaktujte nás, prosím, prostřednictvím kontaktního formuláře.";
+                            }
+                         }
+                         
+                         if(isset($_POST['public'])){
+                            if(isset($_POST['owner']) && trim($_POST['owner']) != ""){
+                                $connection->execute("UPDATE orders SET public=1 WHERE id = " . $orderId);
+                                $connection->execute("UPDATE pipe SET owner=" . parent::sanity($_POST['owner']) . " WHERE id = " . $_POST['pipe_id']);
+                            } else {
+                                $_SESSION['errorMessage'][] = "Nevyplnili jste všechna povinná pole pro uveřejnění v seznamu dárců. Kontaktujte nás, prosím, prostřednictvím kontaktního formuláře.";
+                            }
+                         }
                          
                          $_SESSION['lastOrder'] = $orderId;
                          
                          return $this->redirect("/adopce/potvrzeni");
                 
                     } else {
-                    die(var_dump($_POST));
                         $_SESSION['errorMessage'][] = "Nebyla vyplněna všechna povinná pole.";
-                        return $this->redirect("/adopce");
+                        $_SESSION['desiredPipe'] = $_POST['pipe_id'];
+                        return $this->redirect("/adopce/objednavka");
                     }
                 } else {
+                    if(isset($_POST['companyName']) && trim($_POST['companyName']) != ""
+                         && isset($_POST['email']) && trim($_POST['email']) != ""){
+                         
+                         $orderId = $connection->execute("INSERT INTO orders (company_name, email, pipe_id) VALUES (" .
+                            parent::sanity($_POST['companyName']) . "," . parent::sanity($_POST['email']) . "," . $_POST['pipe_id'] . ")")->lastInsertId();
+                            
+                         $connection->execute("UPDATE pipe SET state = 1 WHERE id = " . $_POST['pipe_id']);
+                         
+//                         $this->sendConfirmation($connection, $orderId);
+                         
+                         if(isset($_POST['confirmation'])){
+                            if(isset($_POST['country']) && trim($_POST['country']) != ""
+                                && isset($_POST['city']) && trim($_POST['city']) != ""
+                                && isset($_POST['postcode']) && trim($_POST['postcode']) != ""
+                                && isset($_POST['address']) && trim($_POST['address']) != ""
+                                && isset($_POST['ico']) && trim($_POST['ico']) != ""){
+                                
+                                $connection->execute("UPDATE orders SET country=" . parent::sanity($_POST['country']) . ", city=" . parent::sanity($_POST['city']) . ", zip="
+                                        . parent::sanity($_POST['postcode']) . ", address=" . parent::sanity($_POST['address']) . ", ico=" . parent::sanity($_POST['ico']) . ","
+                                        . " confirmation=1 WHERE id = " . $orderId);
+                            } else {
+                                $_SESSION['errorMessage'][] = "Nevyplnili jste všechna povinná pole pro odelsání potvrzení o daru. Kontaktujte nás, prosím, prostřednictvím kontaktního formuláře.";
+                            }
+                         }
+                         
+                         if(isset($_POST['public'])){
+                            if(isset($_POST['owner']) && trim($_POST['owner']) != ""){
+                                $connection->execute("UPDATE orders SET public=1 WHERE id = " . $orderId);
+                                $connection->execute("UPDATE pipe SET owner=" . parent::sanity($_POST['owner']) . " WHERE id = " . $_POST['pipe_id']);
+                            } else {
+                                $_SESSION['errorMessage'][] = "Nevyplnili jste všechna povinná pole pro uveřejnění v seznamu dárců. Kontaktujte nás, prosím, prostřednictvím kontaktního formuláře.";
+                            }
+                         }
+                         
+                         $_SESSION['lastOrder'] = $orderId;
+                         
+                         return $this->redirect("/adopce/potvrzeni");
                 
+                    } else {
+                        $_SESSION['errorMessage'][] = "Nebyla vyplněna všechna povinná pole.";
+                        $_SESSION['desiredPipe'] = $_POST['pipe_id'];
+                        return $this->redirect("/adopce/objednavka");
+                    }
                 }
             }
         }
     }
     
     public function showConfirmation($connection){
-
-        $data = $connection->execute("SELECT o.id, p.price FROM pipe as p, orders as o WHERE o.id = " . $_SESSION['lastOrder'] . " AND p.id = o.pipe_id")->fetch("assoc");
-
-        $this->set("data", $data);
+        if(isset($_SESSION['lastOrder'])){
+            $data = $connection->execute("SELECT o.id, p.price FROM pipe as p, orders as o WHERE o.id = " . $_SESSION['lastOrder'] . " AND p.id = o.pipe_id")->fetch("assoc");
+            unset($_SESSION['lastOrder']);
+            $this->set("data", $data);
+        } else {
+            return $this->redirect("/adopce");
+        }        
     }
     
     public function sendConfirmation($connection, $orderID){

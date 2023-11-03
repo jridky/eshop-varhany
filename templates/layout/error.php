@@ -51,15 +51,26 @@
                     <li><a class="header__nav-item<?= ($active == "home"?" header__nav-item--active\" aria-current=\"page":"") ?>" href="/">Informace</a></li>
                     <li><a class="header__nav-item<?= ($active == "adoption"?" header__nav-item--active\" aria-current=\"page":"") ?>" href="/adopce">Adopce</a></li>
                     <li><a class="header__nav-item<?= ($active == "contact"?" header__nav-item--active\" aria-current=\"page":"") ?>" href="/kontakt">Kontakt</a></li>
-                    <li class="header__nav-item header__close-button">Zavřít</li>
+                    <li class="header__nav-item header__close-button" onclick="closeMenu()">Zavřít</li>
                 </ul>
             </nav>
-            <div class="header__menu-icon">
+            <div class="header__menu-icon" onclick="showMenu()">
                 <svg class="MuiSvgIcon-root MuiSvgIcon-fontSizeLarge" focusable="false" viewBox="0 0 24 24" aria-hidden="true"><path d="M3 18h18v-2H3v2zm0-5h18v-2H3v2zm0-7v2h18V6H3z"></path></svg>
             </div>
         </div>
     </header>
     <?= $this->fetch('content') ?>
     </div></div>
+    <script>
+        function showMenu(){
+            document.getElementsByTagName("body")[0].style.overflow='hidden';
+            document.getElementsByClassName("header__nav-items")[0].className += " header__nav-items--visible";
+        }
+        
+        function closeMenu(){
+            document.getElementsByTagName("body")[0].style.overflow='visible';
+            document.getElementsByClassName("header__nav-items")[0].className = document.getElementsByClassName("header__nav-items")[0].className.replace(" header__nav-items--visible","");
+        }
+    </script>
 </body>
 </html>

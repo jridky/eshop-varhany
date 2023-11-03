@@ -48,6 +48,10 @@
                     <th>Píšťala:</th>
                     <td id="tooltip_pipe">Gambe 8 / ais</td>
                 </tr>
+                <tr id="owner-row" style="display: none">
+                    <th>Adoptoval:</th>
+                    <td id="tooltip_owner">Gambe 8 / ais</td>
+                </tr>
             </tbody>
         </table>
     </div>
@@ -69,7 +73,7 @@
                 <td class="pipe-table__cell">
                     <div class="pipe-table__button-wrapper">
                         <button data-for="pipe-table__tooltip"  <?= ($p['state'] == 0?"onclick=\"fillDonation(this, 'pipe" . $p['id'] . "')\"":"") ?> onmouseover="showTooltip(this)" onmouseout="hideTooltip(this)" id="pipe<?= $p['id'] ?>" 
-                        rake="<?= $r['name'] ?>" pipe="<?= $m['tones'][$key]['name'] ?>" price="<?= number_format($p['price'],0,',','.') . " Kč" ?>" state="<?= $p['state'] ?>" 
+                        rake="<?= $r['name'] ?>" pipe="<?= $m['tones'][$key]['name'] ?>" price="<?= number_format($p['price'],0,',','.') . " Kč" ?>" state="<?= $p['state'] ?>" owner="<?= $p['owner'] ?>" 
                         class="pipe-table__button pipe-table__button<?= ($p['state'] != 0?"--locked":"--available") ?>  
                         <?= ($p['price'] < 1000?"pipe-table__button--pricepoint1":
                             ($p['price'] < 4000?"pipe-table__button--pricepoint2":
@@ -151,33 +155,49 @@
     }
     
     function showTooltip(element){
-        var state;
+        var state, owner;
         switch(element.getAttribute("state")){
             case '2': state = "adoptovaná";
+                if(element.getAttribute("owner") == ""){
+                    owner = "anonymně";
+                } else {
+                    owner = element.getAttribute("owner");
+                }
                 break;
             case '1': state = "rezervovaná";
+                if(element.getAttribute("owner") == ""){
+                    owner = "anonymně";
+                } else {
+                    owner = element.getAttribute("owner");
+                }
                 break;
             default: state = "k adopci";
+                owner = undefined;
                 break;
         }
         document.getElementById("tooltip_pipe").innerHTML = element.getAttribute("rake") + " / " + element.getAttribute("pipe");
         document.getElementById("tooltip_price").innerHTML = element.getAttribute("price");
         document.getElementById("tooltip_state").innerHTML = state;
+
+        if(owner != undefined){
+            document.getElementById("tooltip_owner").innerHTML = owner;
+            document.getElementById("owner-row").style.display = "table-row";
+        }
         
         var page = document.getElementsByClassName("pipes-page")[0];
         var table = document.getElementsByClassName("active-table")[0];
         var left = element.offsetLeft - (document.getElementById("pipe-table__tooltip").offsetWidth/2) + (element.offsetWidth/2) - table.scrollLeft;
         if((left + document.getElementById("pipe-table__tooltip").offsetWidth) > (page.offsetLeft + page.offsetWidth)){
-            document.getElementById("pipe-table__tooltip").style.top = element.offsetTop - (document.getElementById("pipe-table__tooltip").offsetHeight/2) + (element.parentNode.offsetHeight/2);
-            document.getElementById("pipe-table__tooltip").style.left = element.offsetLeft - document.getElementById("pipe-table__tooltip").offsetWidth - (element.offsetWidth/2) - table.scrollLeft;
+            document.getElementById("pipe-table__tooltip").style.top = (element.offsetTop - (document.getElementById("pipe-table__tooltip").offsetHeight/2) + (element.parentNode.offsetHeight/2)) + "px";
+            document.getElementById("pipe-table__tooltip").style.left = (element.offsetLeft - document.getElementById("pipe-table__tooltip").offsetWidth - (element.offsetWidth/2) - table.scrollLeft) + "px";
             document.getElementById("pipe-table__tooltip").className += " place-left";
         } else if (left < 1) {
-            document.getElementById("pipe-table__tooltip").style.top = element.offsetTop - (document.getElementById("pipe-table__tooltip").offsetHeight/2) + (element.parentNode.offsetHeight/2);
-            document.getElementById("pipe-table__tooltip").style.left = element.offsetLeft - table.scrollLeft + element.parentNode.offsetWidth;
+            document.getElementById("pipe-table__tooltip").style.top = (element.offsetTop - (document.getElementById("pipe-table__tooltip").offsetHeight/2) + (element.parentNode.offsetHeight/2)) + "px";
+            document.getElementById("pipe-table__tooltip").style.left = (element.offsetLeft - table.scrollLeft + element.parentNode.offsetWidth) + "px";
             document.getElementById("pipe-table__tooltip").className += " place-right";
         } else {
-            document.getElementById("pipe-table__tooltip").style.top = element.offsetTop + element.parentNode.offsetHeight;
-            document.getElementById("pipe-table__tooltip").style.left = element.offsetLeft - (document.getElementById("pipe-table__tooltip").offsetWidth/2) + (element.offsetWidth/2) - table.scrollLeft;
+            document.getElementById("pipe-table__tooltip").style.top = (element.offsetTop + element.parentNode.offsetHeight) + "px";
+            document.getElementById("pipe-table__tooltip").style.left = (element.offsetLeft - (document.getElementById("pipe-table__tooltip").offsetWidth/2) + (element.offsetWidth/2) - table.scrollLeft) + "px";
             document.getElementById("pipe-table__tooltip").className += " place-bottom";
         }
         document.getElementById("pipe-table__tooltip").className += " show";
@@ -191,12 +211,13 @@
         document.getElementById("pipe-table__tooltip").className = document.getElementById("pipe-table__tooltip").className.replace(" place-bottom", "");
         document.getElementById("pipe-table__tooltip").style.top = "-999em";
         document.getElementById("pipe-table__tooltip").style.left = "-999em";
+        document.getElementById("owner-row").style.display = "none";
     }
     
     function showPriceTooltip(element){
         document.getElementById("price-legend__tooltip").innerHTML = element.getAttribute("data-text");
-        document.getElementById("price-legend__tooltip").style.top = element.offsetTop + element.parentNode.offsetHeight;
-        document.getElementById("price-legend__tooltip").style.left = element.offsetLeft - (document.getElementById("price-legend__tooltip").offsetWidth/2) + (element.offsetWidth/2);
+        document.getElementById("price-legend__tooltip").style.top = (element.offsetTop + element.parentNode.offsetHeight) + "px";
+        document.getElementById("price-legend__tooltip").style.left = (element.offsetLeft - (document.getElementById("price-legend__tooltip").offsetWidth/2) + (element.offsetWidth/2)) + "px";
         document.getElementById("price-legend__tooltip").className += " place-bottom";
         document.getElementById("price-legend__tooltip").className += " show";
     }
