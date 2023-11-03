@@ -20,70 +20,46 @@
 <head>
     <?= $this->Html->charset() ?>
     <meta name="viewport" content="width=device-width, initial-scale=1">
-    <meta name="google-site-verification" content="mvWEs7Jh-CtqK_PbYN0z5zwfdo3UAY8RMyWu_Z9t5Xc" />
-    <title>Ajajaj, chyba!  - Farnost Brno - Královo Pole</title>
+
+    <title>Varhany pro Královo Pole</title>
 
     <link href="https://fonts.googleapis.com/css?family=Open+Sans:400,700" rel="stylesheet">
-
-    <link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png">
-    <link rel="icon" type="image/png" sizes="32x32" href="/favicon-32x32.png">
-    <link rel="icon" type="image/png" sizes="16x16" href="/favicon-16x16.png">
-    <link rel="manifest" href="/site.webmanifest">
-    <link rel="mask-icon" href="/safari-pinned-tab.svg" color="#5bbad5">
-    <meta name="msapplication-TileColor" content="#da532c">
-    <meta name="theme-color" content="#ffffff">
-   
-    <script src="https://code.jquery.com/jquery-3.3.1.min.js" integrity="sha256-FgpCb/KJQlLNfOu91ta32o/NMZxltwRo8QtmkMRdAu8=" crossorigin="anonymous"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.7/umd/popper.min.js" integrity="sha384-UO2eT0CpHqdSJQ6hJty5KVphtPhzWj9WO1clHTMGa3JDZwrnQq4sF86dIHNDz0W1" crossorigin="anonymous"></script>
-    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css" integrity="sha384-ggOyR0iXCbMQv3Xipma34MD+dH/1fQ784/j6cY/iJTQUOhcWr7x9JvoRxT2MZw1T" crossorigin="anonymous">
-    <link href="https://stackpath.bootstrapcdn.com/font-awesome/4.7.0/css/font-awesome.min.css" rel="stylesheet" integrity="sha384-wvfXpqpZZVQGK6TAh5PVlGOfQNHSoD2xbE+QkPxCAFlNEevoEH3Sl0sibVcOQVnN" crossorigin="anonymous">
-    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/js/bootstrap.min.js" integrity="sha384-JjSmVgyd0p3pXB1rRibZUAYoIIy6OrQ6VrjIEaFf/nJGzIxFDsf4x0xIM+B07jRM" crossorigin="anonymous"></script>
+    
+    <link rel="icon" href="/favicon.ico">
+    <meta name="theme-color" content="#3153b3">
+    <link rel="apple-touch-icon" href="/logo192.png">
+    <link rel="manifest" href="/manifest.json">
+  
 
     <?= $this->Html->css('web.css') ?>
-    <?= $this->Html->css('landing.css') ?>
-    <?= $this->Html->css('cookie.css') ?>
 
-    <!-- Google tag (gtag.js) -->
-    <script async src="https://www.googletagmanager.com/gtag/js?id=G-EC7W1MV9GV"></script>
-    <script>
-      window.dataLayer = window.dataLayer || [];
-      function gtag(){dataLayer.push(arguments);}
-      gtag('js', new Date());
-
-      gtag('config', 'G-EC7W1MV9GV');
-    </script>
 </head>
 <body>
-    <header>
-            <nav class="mb-1 navbar navbar-expand-xl fixed-top navbar-light">
-            <span><a href="/"><img src="/img/logo.svg" style="max-height: 2rem;"></a><a href="/" class="px-3">Farnost Brno - Královo Pole</a></span>
-            <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarMobile"
-                aria-controls="navbarMobile" aria-expanded="false" aria-label="Toggle navigation">
-                <span class="navbar-toggler-icon"></span>
-            </button>
-            <div class="collapse navbar-collapse" id="navbarMobile">
-                <ul class="navbar-nav ml-auto">
-                    <li class="nav-item px-2">
-                        <a href="/" class="nav-link">Aktuality</a>
-                    </li>
-                    <li class="nav-item px-2">
-                        <a href="/informace-z-farnosti/" class="nav-link">Informace z farnosti</a>
-                    </li>
-                    <li class="nav-item px-2">
-                        <a href="/farnost-a-aktivity/" class="nav-link">Farnost a její aktivity</a>
-                    </li>
-                    <li class="nav-item px-2">
-                        <a href="/farni-spolecenstvi/" class="nav-link">Farní společenství</a>
-                    </li>
-                    <li class="nav-item px-2">
-                        <a href="/login/" class="nav-link">Interní sekce webu</a>
-                    </li>
+    <a href="#" id="return-to-top"><i class="fa fa-chevron-up"></i></a>
+    <div class="root"><div class="app">
+    <header class="header">
+        <div class="header__content container">
+            <a aria-current="page" class="header__logo-container active" href="/">
+                <img class="header__logo" src="/img/logo.svg" alt="logo píšťal varhan">
+                <div class="header__title-container">
+                    <h3 class="header__title">VARHANY</h3>
+                    <h4 class="header__subtitle">pro Královo Pole</h4>
+                </div>
+            </a>
+            <nav class="header__nav">
+                <ul class="header__nav-items ">
+                    <li><a class="header__nav-item<?= ($active == "home"?" header__nav-item--active\" aria-current=\"page":"") ?>" href="/">Informace</a></li>
+                    <li><a class="header__nav-item<?= ($active == "adoption"?" header__nav-item--active\" aria-current=\"page":"") ?>" href="/adopce">Adopce</a></li>
+                    <li><a class="header__nav-item<?= ($active == "contact"?" header__nav-item--active\" aria-current=\"page":"") ?>" href="/kontakt">Kontakt</a></li>
+                    <li class="header__nav-item header__close-button">Zavřít</li>
                 </ul>
+            </nav>
+            <div class="header__menu-icon">
+                <svg class="MuiSvgIcon-root MuiSvgIcon-fontSizeLarge" focusable="false" viewBox="0 0 24 24" aria-hidden="true"><path d="M3 18h18v-2H3v2zm0-5h18v-2H3v2zm0-7v2h18V6H3z"></path></svg>
             </div>
-        </nav>
-        <div class="row mr-0 mt-5" style="height: 85%">
-        <?= $this->fetch('content') ?>
         </div>
     </header>
+    <?= $this->fetch('content') ?>
+    </div></div>
 </body>
 </html>

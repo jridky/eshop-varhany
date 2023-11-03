@@ -46,7 +46,10 @@ class HomePageController extends AppController
     public function display(string ...$path): ?Response
     {
         $this->set("active", "home");
-        $this->set("amount", "0");
+        $connection = ConnectionManager::get('default');
+        
+        $amount = $connection->execute("SELECT sum(price) as price FROM pipe WHERE state > 0")->fetch("assoc");
+        $this->set("amount", $amount['price']);
 
         try {
             return $this->render("home");

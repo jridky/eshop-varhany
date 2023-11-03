@@ -58,6 +58,8 @@ return function (RouteBuilder $routes): void {
         $builder->connect('/', ['controller' => 'HomePage', 'action' => 'display']);
         $builder->connect('/kontakt', ['controller' => 'Contact', 'action' => 'display']);
         $builder->connect('/adopce', ['controller' => 'Adoption', 'action' => 'display']);
+        $builder->connect('/adopce/objednavka/*', ['controller' => 'Adoption', 'action' => 'order']);
+        $builder->connect('/adopce/potvrzeni/*', ['controller' => 'Adoption', 'action' => 'confirmation']);
         $builder->connect('/login', ['controller' => 'Auth', 'action' => 'login']);
         $builder->connect('/logout', ['controller' => 'Auth', 'action' => 'logout']);
         $builder->connect('/admin/*', ['controller' => 'Admin', 'action' => 'display']);

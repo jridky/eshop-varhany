@@ -204,7 +204,7 @@ class AdminController extends AppController
             $ranks = $connection->execute("SELECT id, name FROM rank WHERE machine_id = " . $m['id'] . " ORDER BY name, id")->fetchAll("assoc");
 
             foreach($ranks as $rkey => $r){
-                $pipes = $connection->execute("SELECT id, FORMAT(price,0,'de_DE') as price, state, owner FROM pipe WHERE machine_id = " . $m['id'] . " AND rank_id = " . $r['id'] . " ORDER BY tone_id")->fetchAll("assoc");
+                $pipes = $connection->execute("SELECT id, price, state, owner FROM pipe WHERE machine_id = " . $m['id'] . " AND rank_id = " . $r['id'] . " ORDER BY tone_id")->fetchAll("assoc");
                 $ranks[$rkey]['pipes'] = $pipes;
             }
 

@@ -57,6 +57,13 @@ class AppController extends Controller
         //$this->loadComponent('FormProtection');
     }
 
+    public function sanity($what){
+        if(is_numeric($what)){
+            return $what;
+        }
+        return "'" . str_replace(array("\\", "'"), array("\\\\", "\'"), $what) . "'";
+    }
+    
     public function printFlush(){
         $flashCount = 0;
         if(isset($_SESSION['successMessage'])){

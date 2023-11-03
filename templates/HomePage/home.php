@@ -37,7 +37,7 @@
             </div>
             <div class="home-page__donation-status-conainer">
                 <div class="home-page__donation-status">
-                    <span class="home-page__donation-status-text">Darováno: <br><?= $amount ?> Kč</span>
+                    <span class="home-page__donation-status-text">Darováno: <br><?= number_format($amount,0,',','.') ?> Kč</span>
                     <div class="home-page__donation-status-filler" style="height: 0%;"></div>
                 </div>
             </div>

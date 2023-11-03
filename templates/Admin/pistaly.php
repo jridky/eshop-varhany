@@ -4,14 +4,20 @@
         <button class="manuals__button<?= ($k==0?" manuals__button--active":"") ?>" onclick="showPipes(event, 'pipes<?= $m['id'] ?>')"><?= $m['name'] ?></button>
     <?php } ?>
     </div>
+    <?php if($flashCount > 0){  ?>
+    <div class="admin-login-page__error">
+       <?= $this->Flash->render(); ?>
+    </div>
+    <?php } ?>
     <div class="price-legend pipes-page__price-legend">
+        <div class="__react_component_tooltip price-tooltip place-bottom type-dark" id="price-legend__tooltip" data-id="tooltip"></div>
         <div class="price-legend__container">
             <ul class="price-legend__items">
-                <li class="price-legend__item" data-tip="0" data-for="price-legend__tooltip" currentitem="false"></li>
-                <li class="price-legend__item" data-tip="1" data-for="price-legend__tooltip" currentitem="false"></li>
-                <li class="price-legend__item" data-tip="2" data-for="price-legend__tooltip" currentitem="false"></li>
-                <li class="price-legend__item" data-tip="3" data-for="price-legend__tooltip" currentitem="false"></li>
-                <li class="price-legend__item" data-tip="4" data-for="price-legend__tooltip" currentitem="false"></li>
+                <li class="price-legend__item" data-text="od 0 Kč do 1.000 Kč" data-for="price-legend__tooltip" onmouseover="showPriceTooltip(this)" onmouseout="hidePriceTooltip(this)" ></li>
+                <li class="price-legend__item" data-text="od 1.000 Kč do 4.000 Kč" data-for="price-legend__tooltip" onmouseover="showPriceTooltip(this)" onmouseout="hidePriceTooltip(this)"></li>
+                <li class="price-legend__item" data-text="od 4.000 Kč do 8.000 Kč" data-for="price-legend__tooltip" onmouseover="showPriceTooltip(this)" onmouseout="hidePriceTooltip(this)"></li>
+                <li class="price-legend__item" data-text="od 8.000 Kč do 20.000 Kč" data-for="price-legend__tooltip" onmouseover="showPriceTooltip(this)" onmouseout="hidePriceTooltip(this)"></li>
+                <li class="price-legend__item" data-text="nad 20.000 Kč" data-for="price-legend__tooltip" onmouseover="showPriceTooltip(this)" onmouseout="hidePriceTooltip(this)"></li>
             </ul>
             <span class="price-legend__label"> - Výše částky</span>
         </div>
@@ -62,8 +68,14 @@
                 <?php foreach($r['pipes'] as $key => $p){ ?>
                 <td class="pipe-table__cell">
                     <div class="pipe-table__button-wrapper">
-                        <button data-for="pipe-table__tooltip"  onclick="fillDonation('pipe<?= $p['id'] ?>')" onmouseover="showTooltip(this)" onmouseout="hideTooltip(this)" id="pipe<?= $p['id'] ?>" rake="<?= $r['name'] ?>" pipe="<?= $m['tones'][$key]['name'] ?>" price="<?= $p['price'] . " Kč" ?>" state="<?= $p['state'] ?>" class="pipe-table__button pipe-table__button<?= ($p['state'] != 0?"--locked":"--available") ?>  pipe-table__button--pricepoint4" aria-label="Tlačítko pro výběr píšťaly" currentitem="false">
-                            <?php ($p['state'] != 0?"<div class=\"pipe-table__cell-fill\"></div>":"") ?>
+                        <button data-for="pipe-table__tooltip"  onclick="fillDonation(this, 'pipe<?= $p['id'] ?>')" onmouseover="showTooltip(this)" onmouseout="hideTooltip(this)" id="pipe<?= $p['id'] ?>" 
+                        rake="<?= $r['name'] ?>" pipe="<?= $m['tones'][$key]['name'] ?>" price="<?= number_format($p['price'],0,',','.') . " Kč" ?>" state="<?= $p['state'] ?>" 
+                        class="pipe-table__button pipe-table__button<?= ($p['state'] != 0?"--locked":"--available")?>  
+                        <?= ($p['price'] < 1000?"pipe-table__button--pricepoint1":
+                            ($p['price'] < 4000?"pipe-table__button--pricepoint2":
+                            ($p['price'] < 8000?"pipe-table__button--pricepoint3":
+                            ($p['price'] < 20000?"pipe-table__button--pricepoint4":"pipe-table__button--pricepoint5")))) ?>" aria-label="Tlačítko pro výběr píšťaly">
+                            <?= ($p['state'] != 0?"<div class=\"pipe-table__cell-fill\"></div>":"") ?>
                         </button>
                     </div>
                 </td>
@@ -90,7 +102,7 @@
                 </div>
             </div>
             <div class="button donation-page__button">
-                <button class="button__inner ">Adoptovat</button>
+                <button class="button__inner button__inner--disabled" id="donation-button">Adoptovat</button>
             </div>
         </div>
     </div>
@@ -113,10 +125,16 @@
       evt.currentTarget.className += " manuals__button--active";
     }
     
-    function fillDonation(pipe){
+    function fillDonation(element, pipe){
         document.getElementById("donationRake").innerHTML = document.getElementById(pipe).getAttribute("rake");
         document.getElementById("donationTone").innerHTML = document.getElementById(pipe).getAttribute("pipe");
         document.getElementById("donationPrice").innerHTML = document.getElementById(pipe).getAttribute("price");
+        document.getElementById("donation-button").className = document.getElementById("donation-button").className.replace(" button__inner--disabled","");
+        var selected = document.getElementsByClassName("pipe-table__button--selected");
+        for (i = 0; i < selected.length; i++){
+            selected[i].className = selected[i].className.replace(" pipe-table__button--selected", "");
+        }
+        element.className += " pipe-table__button--selected";
     }
     
     function showTooltip(element){
@@ -160,5 +178,21 @@
         document.getElementById("pipe-table__tooltip").className = document.getElementById("pipe-table__tooltip").className.replace(" place-bottom", "");
         document.getElementById("pipe-table__tooltip").style.top = "-999em";
         document.getElementById("pipe-table__tooltip").style.left = "-999em";
+    }
+    
+    function showPriceTooltip(element){
+        document.getElementById("price-legend__tooltip").innerHTML = element.getAttribute("data-text");
+        document.getElementById("price-legend__tooltip").style.top = element.offsetTop + element.parentNode.offsetHeight;
+        document.getElementById("price-legend__tooltip").style.left = element.offsetLeft - (document.getElementById("price-legend__tooltip").offsetWidth/2) + (element.offsetWidth/2);
+        document.getElementById("price-legend__tooltip").className += " place-bottom";
+        document.getElementById("price-legend__tooltip").className += " show";
+    }
+    
+    function hidePriceTooltip(element){
+        document.getElementById("price-legend__tooltip").className = document.getElementById("price-legend__tooltip").className.replace(" show", "");
+        document.getElementById("price-legend__tooltip").className = document.getElementById("price-legend__tooltip").className.replace(" place-top", "");
+        document.getElementById("price-legend__tooltip").className = document.getElementById("price-legend__tooltip").className.replace(" place-bottom", "");
+        document.getElementById("price-legend__tooltip").style.top = "-999em";
+        document.getElementById("price-legend__tooltip").style.left = "-999em";
     }
 </script>
