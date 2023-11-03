@@ -1,6 +1,11 @@
 <main class="contact-page container">
     <h1 class="contact-page__heading">Kontaktujte nás</h1>
-    <div class="contact-page__container">
+    <?php if($flashCount > 0){  ?>
+    <div class="admin-login-page__error">
+       <?= $this->Flash->render(); ?>
+    </div>
+    <?php } ?>
+    <div class="contact-page__container">    
         <form action="" class="contact-page__form" method="post">
             <input type="hidden" name="_method" value="post">
             <input type="hidden" name="_csrfToken" value="<?= $token ?>">
@@ -17,7 +22,7 @@
             <label class="input-label">Zpráva</label>
             <textarea name="message" class="contact-page__message" rows="7" maxlength="500" required></textarea>
             <p class="input-field__error-text"></p>
-            <input type="submit" value="Odeslat" class="action-button contact-page__button">
+            <input type="submit" value="Odeslat" name="send" class="action-button contact-page__button">
         </form>
         <div class="contact-info">
             <div class="contact-info__items">

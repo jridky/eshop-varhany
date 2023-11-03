@@ -1,4 +1,31 @@
 <main class="pipes-page">
+    <div class="instructions container">
+        <p class="instructions__text">Informace k adopci píšťaly</p>
+        <button class="instructions__button" onclick="showModal()">i</button>
+        <div class="modal" style="display: none">
+            <div class="modal__container">
+                <div class="modal__top">
+                    <p class="modal__title">Instrukce k&nbsp;adopci:</p>
+                    <button class="MuiButtonBase-root MuiIconButton-root" tabindex="0" type="button">
+                        <span class="MuiIconButton-label" onclick="closeModal()">
+                            <svg class="MuiSvgIcon-root MuiSvgIcon-colorPrimary" focusable="false" viewBox="0 0 24 24" aria-hidden="true"><path d="M19 6.41L17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12z"></path></svg>
+                        </span>
+                        <span class="MuiTouchRipple-root"></span>
+                    </button>
+                </div>
+                <ol class="instructions__item-list">
+                    <li class="instructions__item">Vyberte si stroj, ze kterého chcete píšťalu adoptovat.</li>
+                    <li class="instructions__item">Pro vybraný stroj se zobrazí tabulka píšťal. V řádcích tabulky se
+                        vyskytují rejstříky (sady píšťal) stroje. Sloupce tabulky určují tón píšťaly. Píšťaly jsou barevně rozlišeny podle částky
+                        (viz legenda pod výběrem stroje).</li>
+                    <li class="instructions__item">Po vybrání píšťaly z tabulky se aktivuje tlačítko pro adopci píšťaly,
+                        které Vás nasměruje na formulář. Částku je možné zaplatit pomocí
+                        bankovního převodu, kdy bude pro Vás píšťala zarezervována a zároveň Vám
+                        budou poskytnuty informace k provedení platby.</li>
+                </ol>
+            </div>
+        </div>
+    </div>
     <div class="manuals container">
     <?php foreach($machines as $k => $m){ ?>
         <button class="manuals__button<?= ($k==0?" manuals__button--active":"") ?>" onclick="showPipes(event, 'pipes<?= $m['id'] ?>')"><?= $m['name'] ?></button>
@@ -228,5 +255,13 @@
         document.getElementById("price-legend__tooltip").className = document.getElementById("price-legend__tooltip").className.replace(" place-bottom", "");
         document.getElementById("price-legend__tooltip").style.top = "-999em";
         document.getElementById("price-legend__tooltip").style.left = "-999em";
+    }
+    
+    function showModal(){
+        document.getElementsByClassName("modal")[0].style.display = "flex";
+    }
+    
+    function closeModal(){
+        document.getElementsByClassName("modal")[0].style.display = "none";
     }
 </script>
