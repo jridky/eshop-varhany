@@ -52,7 +52,21 @@
                         <svg class="MuiSvgIcon-root" focusable="false" viewBox="0 0 24 24" aria-hidden="true"><path d="M10 20v-6h4v6h5v-8h3L12 3 2 12h3v8z"></path></svg>
                         <span class="contact-info__item-heading">Adresa:</span>
                     </div>
-                    <p class="contact-info__text">Brno, Královo Pole, Nová 20</p>
+                    <p class="contact-info__text">Loosova 741/23, Brno 638 00</p>
+                </div>
+                <div class="contact-info__item">
+                    <div class="contact-info__row">
+                        <svg class="MuiSvgIcon-root" focusable="false" viewBox="0 0 24 24" aria-hidden="true"><path d="M10 20v-6h4v6h5v-8h3L12 3 2 12h3v8z"></path></svg>
+                        <span class="contact-info__item-heading">IČO:</span>
+                    </div>
+                    <p class="contact-info__text">22879293</p>
+                </div>
+                <div class="contact-info__item">
+                    <div class="contact-info__row">
+                        <svg class="MuiSvgIcon-root" focusable="false" viewBox="0 0 24 24" aria-hidden="true"><path d="M10 20v-6h4v6h5v-8h3L12 3 2 12h3v8z"></path></svg>
+                        <span class="contact-info__item-heading">Bankovní spojení:</span>
+                    </div>
+                    <p class="contact-info__text">249610162/0300</p>
                 </div>
             </div>
         </div>
