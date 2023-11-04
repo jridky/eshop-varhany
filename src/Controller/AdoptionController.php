@@ -212,7 +212,7 @@ class AdoptionController extends AppController
                                         . parent::sanity($_POST['postcode']) . ", address=" . parent::sanity($_POST['address']) . ", birth_date=" . parent::sanity($_POST['birthdate']) . ","
                                         . " confirmation=1 WHERE id = " . $orderId);
                             } else {
-                                $_SESSION['errorMessage'][] = "Nevyplnili jste všechna povinná pole pro odelsání potvrzení o daru. Kontaktujte nás, prosím, prostřednictvím kontaktního formuláře.";
+                                $_SESSION['errorMessage'][] = "Nevyplnili jste všechna povinná pole pro odeslání potvrzení o daru. Kontaktujte nás, prosím, prostřednictvím kontaktního formuláře.";
                             }
                          }
                          
@@ -256,7 +256,7 @@ class AdoptionController extends AppController
                                         . parent::sanity($_POST['postcode']) . ", address=" . parent::sanity($_POST['address']) . ", ico=" . parent::sanity($_POST['ico']) . ","
                                         . " confirmation=1 WHERE id = " . $orderId);
                             } else {
-                                $_SESSION['errorMessage'][] = "Nevyplnili jste všechna povinná pole pro odelsání potvrzení o daru. Kontaktujte nás, prosím, prostřednictvím kontaktního formuláře.";
+                                $_SESSION['errorMessage'][] = "Nevyplnili jste všechna povinná pole pro odeslání potvrzení o daru. Kontaktujte nás, prosím, prostřednictvím kontaktního formuláře.";
                             }
                          }
                          
