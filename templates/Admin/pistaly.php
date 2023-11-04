@@ -141,17 +141,19 @@
         
         var page = document.getElementsByClassName("pipes-page")[0];
         var table = document.getElementsByClassName("active-table")[0];
+        var html = document.getElementsByTagName("html")[0];
+        
         var left = element.offsetLeft - (document.getElementById("pipe-table__tooltip").offsetWidth/2) + (element.offsetWidth/2) - table.scrollLeft;
         if((left + document.getElementById("pipe-table__tooltip").offsetWidth) > (page.offsetLeft + page.offsetWidth)){
-            document.getElementById("pipe-table__tooltip").style.top = (element.offsetTop - (document.getElementById("pipe-table__tooltip").offsetHeight/2) + (element.parentNode.offsetHeight/2)) + "px";
+            document.getElementById("pipe-table__tooltip").style.top = (element.offsetTop - (document.getElementById("pipe-table__tooltip").offsetHeight/2) + (element.parentNode.offsetHeight/2) - html.scrollTop) + "px";
             document.getElementById("pipe-table__tooltip").style.left = (element.offsetLeft - document.getElementById("pipe-table__tooltip").offsetWidth - (element.offsetWidth/2) - table.scrollLeft) + "px";
             document.getElementById("pipe-table__tooltip").className += " place-left";
         } else if (left < 1) {
-            document.getElementById("pipe-table__tooltip").style.top = (element.offsetTop - (document.getElementById("pipe-table__tooltip").offsetHeight/2) + (element.parentNode.offsetHeight/2)) + "px";
+            document.getElementById("pipe-table__tooltip").style.top = (element.offsetTop - (document.getElementById("pipe-table__tooltip").offsetHeight/2) + (element.parentNode.offsetHeight/2) - html.scrollTop) + "px";
             document.getElementById("pipe-table__tooltip").style.left = (element.offsetLeft - table.scrollLeft + element.parentNode.offsetWidth) + "px";
             document.getElementById("pipe-table__tooltip").className += " place-right";
         } else {
-            document.getElementById("pipe-table__tooltip").style.top = (element.offsetTop + element.parentNode.offsetHeight) + "px";
+            document.getElementById("pipe-table__tooltip").style.top = (element.offsetTop + element.parentNode.offsetHeight - html.scrollTop) + "px";
             document.getElementById("pipe-table__tooltip").style.left = (element.offsetLeft - (document.getElementById("pipe-table__tooltip").offsetWidth/2) + (element.offsetWidth/2) - table.scrollLeft) + "px";
             document.getElementById("pipe-table__tooltip").className += " place-bottom";
         }
