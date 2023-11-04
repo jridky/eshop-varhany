@@ -56,7 +56,7 @@
                     </div>
                     <div class="form-checkbox">
                         <span class="form-checkbox__row">
-                            <input class="form-checkbox__input" type="checkbox" name="confirmation" value="1" onclick="showHidden(this, 'os-donator')">Požaduji zaslat potvrzení o daru
+                            <input class="form-checkbox__input" type="checkbox" name="confirmation" value="1" onclick="showHidden(this, 'os-donator')">Požaduji zaslat potvrzení o daru pro daňové účely (v lednu příštího roku)
                         </span>
                         <p class="form-checkbox__error">&nbsp;</p>
                     </div>
@@ -154,7 +154,7 @@
                     </div>
                     <div class="form-checkbox">
                         <span class="form-checkbox__row">
-                            <input class="form-checkbox__input" type="checkbox" name="confirmation" value="1" onclick="showHidden(this, 'ico-donator')">Požaduji zaslat potvrzení o daru
+                            <input class="form-checkbox__input" type="checkbox" name="confirmation" value="1" onclick="showHidden(this, 'ico-donator')">Požaduji zaslat potvrzení o daru pro daňové účely (v lednu příštího roku)
                         </span>
                         <p class="form-checkbox__error">&nbsp;</p>
                     </div>
