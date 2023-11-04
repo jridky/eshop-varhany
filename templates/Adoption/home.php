@@ -40,10 +40,10 @@
         <div class="__react_component_tooltip price-tooltip place-bottom type-dark" id="price-legend__tooltip" data-id="tooltip"></div>
         <div class="price-legend__container">
             <ul class="price-legend__items">
-                <li class="price-legend__item" data-text="od 0 Kč do 1.000 Kč" data-for="price-legend__tooltip" onmouseover="showPriceTooltip(this)" onmouseout="hidePriceTooltip(this)" ></li>
-                <li class="price-legend__item" data-text="od 1.000 Kč do 4.000 Kč" data-for="price-legend__tooltip" onmouseover="showPriceTooltip(this)" onmouseout="hidePriceTooltip(this)"></li>
-                <li class="price-legend__item" data-text="od 4.000 Kč do 8.000 Kč" data-for="price-legend__tooltip" onmouseover="showPriceTooltip(this)" onmouseout="hidePriceTooltip(this)"></li>
-                <li class="price-legend__item" data-text="od 8.000 Kč do 20.000 Kč" data-for="price-legend__tooltip" onmouseover="showPriceTooltip(this)" onmouseout="hidePriceTooltip(this)"></li>
+                <li class="price-legend__item" data-text="od 0 Kč do 2.000 Kč" data-for="price-legend__tooltip" onmouseover="showPriceTooltip(this)" onmouseout="hidePriceTooltip(this)" ></li>
+                <li class="price-legend__item" data-text="od 2.001 Kč do 5.000 Kč" data-for="price-legend__tooltip" onmouseover="showPriceTooltip(this)" onmouseout="hidePriceTooltip(this)"></li>
+                <li class="price-legend__item" data-text="od 5.001 Kč do 10.000 Kč" data-for="price-legend__tooltip" onmouseover="showPriceTooltip(this)" onmouseout="hidePriceTooltip(this)"></li>
+                <li class="price-legend__item" data-text="od 10.001 Kč do 20.000 Kč" data-for="price-legend__tooltip" onmouseover="showPriceTooltip(this)" onmouseout="hidePriceTooltip(this)"></li>
                 <li class="price-legend__item" data-text="nad 20.000 Kč" data-for="price-legend__tooltip" onmouseover="showPriceTooltip(this)" onmouseout="hidePriceTooltip(this)"></li>
             </ul>
             <span class="price-legend__label"> - Výše částky</span>
@@ -102,10 +102,10 @@
                         <button data-for="pipe-table__tooltip"  <?= ($p['state'] == 0?"onclick=\"fillDonation(this, 'pipe" . $p['id'] . "')\"":"") ?> onmouseover="showTooltip(this)" onmouseout="hideTooltip(this)" id="pipe<?= $p['id'] ?>" 
                         rake="<?= $r['name'] ?>" pipe="<?= $m['tones'][$key]['name'] ?>" price="<?= number_format($p['price'],0,',','.') . " Kč" ?>" state="<?= $p['state'] ?>" owner="<?= $p['owner'] ?>" 
                         class="pipe-table__button pipe-table__button<?= ($p['state'] != 0?"--locked":"--available") ?>  
-                        <?= ($p['price'] < 1000?"pipe-table__button--pricepoint1":
-                            ($p['price'] < 4000?"pipe-table__button--pricepoint2":
-                            ($p['price'] < 8000?"pipe-table__button--pricepoint3":
-                            ($p['price'] < 20000?"pipe-table__button--pricepoint4":"pipe-table__button--pricepoint5")))) ?>" aria-label="Tlačítko pro výběr píšťaly">
+                        <?= ($p['price'] <= 2000?"pipe-table__button--pricepoint1":
+                            ($p['price'] <= 5000?"pipe-table__button--pricepoint2":
+                            ($p['price'] <= 10000?"pipe-table__button--pricepoint3":
+                            ($p['price'] <= 20000?"pipe-table__button--pricepoint4":"pipe-table__button--pricepoint5")))) ?>" aria-label="Tlačítko pro výběr píšťaly">
                             <?= ($p['state'] != 0?"<div class=\"pipe-table__cell-fill\"></div>":"") ?>
                         </button>
                     </div>
