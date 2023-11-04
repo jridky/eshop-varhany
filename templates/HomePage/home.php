@@ -28,11 +28,9 @@
             <div class="home-page__donation-text">
                 <h1 class="home-page__heading">Kolik budou nové varhany stát a&nbsp;kdy budou hotové?</h1>
                 <p class="home-page__text">
-                    První poptávku jsme učinili v&nbsp;letech 2012 a&nbsp;2013, kdy jsme oslovili celkem 5&nbsp;varhanářských firem. V&nbsp;roce 2016 jsme nabídky
-                    aktualizovali a&nbsp;průměrná cena se pohybuje kolem 15 mil. Kč. Tuto částku se snažíme získat především z&nbsp;příspěvků od dobrodinců ve
-                    farnosti i&nbsp;mimo ni a&nbsp;z&nbsp;darů od podnikatelů. Ucházíme se též o&nbsp;různé veřejnoprávní dotace a&nbsp;usilujeme o&nbsp;zařazení do vhodných
-                    programů různých poskytovatelů účelových grantů. Finanční prostředky na úhradu pořizovací ceny nového nástroje bychom rádi
-                    shromáždili tak, aby stavba mohla začít do pěti let. Vlastní stavba nových varhan by měla být skončena do tří let od zahájení.
+                    Celková potřebná částka je cca 25&nbsp;milionů korun. Aktuálně je vybraný návrh ve schvalovacím procesu u&nbsp;Národního památkového úřadu.
+                    Podpis smlouvy plánujeme do konce roku 2023. Doba trvání vlastní stavby varhan je asi 3&nbsp;roky, tuto dobu využijeme k&nbsp;výběru zbývajících
+                    finančních prostředků.
                 </p>
             </div>
             <div class="home-page__donation-status-conainer">
