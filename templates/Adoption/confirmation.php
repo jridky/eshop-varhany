@@ -26,7 +26,7 @@
     <div class="bank-transfer-page__warning">
         <div class="bank-transfer-page__warning-icon"></div>
         <p class="bank-transfer-page__warning-text">
-            Prosíme o zaslání částky do jednoho týdne. V jiném případě může být rezervace zrušena.
+            Prosíme o zaslání částky do jednoho týdne, jinak může dojít ke zrušení rezervace.
         </p>
     </div>
     <a class="bank-transfer-page__button round-button" href="/adopce">Hotovo</a>
