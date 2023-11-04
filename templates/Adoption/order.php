@@ -61,14 +61,16 @@
                         <p class="form-checkbox__error">&nbsp;</p>
                     </div>
 
-                    <div class="select-field os-donator">
-                        <label class="input-label" for="country">*Stát:</label>
-                        <select id="country" class="os-donator-item select-field__input form__state-select" name="country">
-                            <option value="" disabled="">-</option>
-                            <option value="Česká republika">Česká republika</option>
-                            <option value="Slovensko">Slovensko</option>
-                        </select>
-                        <p class="select-field__error-text">&nbsp;</p>
+                    <div class="input-field os-donator">
+                        <label class="input-label" for="birthdate">*Datum narození:</label>
+                        <input id="birthdate" class="os-donator-item input-field__input " name="birthdate" type="date" maxlength="10">
+                        <p class="input-field__error-text">&nbsp;</p>
+                    </div>
+
+                    <div class="input-field os-donator">
+                        <label class="input-label" for="address">*Ulice:</label>
+                        <input id="address" class="os-donator-item input-field__input " name="address" type="text" maxlength="100">
+                        <p class="input-field__error-text">&nbsp;</p>
                     </div>
                     <div class="form__city-row os-donator">
                         <div class="input-field">
@@ -82,15 +84,14 @@
                             <p class="input-field__error-text">&nbsp;</p>
                         </div>
                     </div>
-                    <div class="input-field os-donator">
-                        <label class="input-label" for="address">*Ulice:</label>
-                        <input id="address" class="os-donator-item input-field__input " name="address" type="text" maxlength="100">
-                        <p class="input-field__error-text">&nbsp;</p>
-                    </div>
-                    <div class="input-field os-donator">
-                        <label class="input-label" for="birthdate">*Datum narození:</label>
-                        <input id="birthdate" class="os-donator-item input-field__input " name="birthdate" type="date" maxlength="10">
-                        <p class="input-field__error-text">&nbsp;</p>
+                    <div class="select-field os-donator">
+                        <label class="input-label" for="country">*Stát:</label>
+                        <select id="country" class="os-donator-item select-field__input form__state-select" name="country">
+                            <option value="" disabled="">-</option>
+                            <option value="Česká republika">Česká republika</option>
+                            <option value="Slovensko">Slovensko</option>
+                        </select>
+                        <p class="select-field__error-text">&nbsp;</p>
                     </div>
                     
                     <div class="form-checkbox">
@@ -141,7 +142,6 @@
                             <span class="pipe-info__item-value"><?= number_format($pipe['price'],0,',','.') ?> Kč</span>
                         </div>
                     </div>
-
                     <div class="input-field">
                         <label class="input-label" for="copanyName">*Název společnosti:</label>
                         <input id="icocompanyName" class="input-field__input " name="companyName" type="text" maxlength="150" required>
@@ -158,15 +158,15 @@
                         </span>
                         <p class="form-checkbox__error">&nbsp;</p>
                     </div>
-
-                    <div class="select-field ico-donator">
-                        <label class="input-label" for="country">*Stát:</label>
-                        <select id="country" class="ico-donator-item select-field__input form__state-select" name="country">
-                            <option value="" disabled="">-</option>
-                            <option value="Česká republika">Česká republika</option>
-                            <option value="Slovensko">Slovensko</option>
-                        </select>
-                        <p class="select-field__error-text">&nbsp;</p>
+                    <div class="input-field ico-donator">
+                        <label class="input-label" for="ico">*IČO:</label>
+                        <input id="ico" class="ico-donator-item input-field__input " name="ico" type="text" maxlength="20">
+                        <p class="input-field__error-text">&nbsp;</p>
+                    </div>
+                    <div class="input-field ico-donator">
+                        <label class="input-label" for="address">*Ulice:</label>
+                        <input id="address" class="ico-donator-item input-field__input " name="address" type="text" maxlength="100">
+                        <p class="input-field__error-text">&nbsp;</p>
                     </div>
                     <div class="form__city-row ico-donator">
                         <div class="input-field">
@@ -180,24 +180,21 @@
                             <p class="input-field__error-text">&nbsp;</p>
                         </div>
                     </div>
-                    <div class="input-field ico-donator">
-                        <label class="input-label" for="address">*Ulice:</label>
-                        <input id="address" class="ico-donator-item input-field__input " name="address" type="text" maxlength="100">
-                        <p class="input-field__error-text">&nbsp;</p>
+                    <div class="select-field ico-donator">
+                        <label class="input-label" for="country">*Stát:</label>
+                        <select id="country" class="ico-donator-item select-field__input form__state-select" name="country">
+                            <option value="" disabled="">-</option>
+                            <option value="Česká republika">Česká republika</option>
+                            <option value="Slovensko">Slovensko</option>
+                        </select>
+                        <p class="select-field__error-text">&nbsp;</p>
                     </div>
-                    <div class="input-field ico-donator">
-                        <label class="input-label" for="ico">*IČO:</label>
-                        <input id="ico" class="ico-donator-item input-field__input " name="ico" type="text" maxlength="20">
-                        <p class="input-field__error-text">&nbsp;</p>
-                    </div>
-                    
                     <div class="form-checkbox">
                         <span class="form-checkbox__row">
                             <input class="form-checkbox__input" type="checkbox" name="public" value="1" onclick="showHidden(this, 'ico-public-donator'); applyName('ico');">Chci být uveřejněn v seznamu dárců
                         </span>
                         <p class="form-checkbox__error">&nbsp;</p>
                     </div>
-
                     <div class="select-field ico-public-donator">
                         <div class="input-field">
                             <label class="input-label" for="public">*Zobrazené jméno dárce:</label>
