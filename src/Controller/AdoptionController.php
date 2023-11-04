@@ -89,7 +89,6 @@ class AdoptionController extends AppController
         } else if(isset($_POST['pipe_id']) && is_numeric($_POST['pipe_id'])){
             return $this->processOrder($connection);
         } else {
-            die(var_dump($_POST));
             return $this->redirect("/adopce");
         }
        
@@ -165,8 +164,6 @@ class AdoptionController extends AppController
         $pipe = $connection->execute("SELECT r.name as rank_name, p.id, price, state, t.name as tone_name FROM pipe as p, rank as r, tone as t WHERE p.id = " . $pipe_id . " AND p.rank_id = r.id AND p.tone_id = t.id")
             ->fetch("assoc");
             
-            var_dump($pipe);
-
         if($pipe['state'] == 0){
             $this->set("pipe", $pipe);
         } else {
@@ -243,7 +240,7 @@ class AdoptionController extends AppController
                             
                          $connection->execute("UPDATE pipe SET state = 1 WHERE id = " . $_POST['pipe_id']);
                          
-//                         $this->sendConfirmation($connection, $orderId);
+                         $this->sendConfirmation($connection, $orderId);
                          
                          if(isset($_POST['confirmation'])){
                             if(isset($_POST['country']) && trim($_POST['country']) != ""
