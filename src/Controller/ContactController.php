@@ -75,11 +75,11 @@ class ContactController extends AppController
             && isset($_POST['message']) && trim($_POST['message']) != ""){
        
             $email = new Mailer('default');
-            $email->setFrom([$_POST['email']=>$_POST['name']]);
+            $email->setFrom("adopce@varhanyprokrpole.cz");
             $email->setEmailFormat("html");
-            $email->setTo("j.ridky@gmail.com");
+            $email->setTo("adopce@varhanyprokrpole.cz");
             $email->setSubject("Zpráva z webu");
-            $email->deliver($_POST['message']);
+            $email->deliver("Zpráva z webu Varhany pro Královo Pole od " . $_POST['name'] . " (" . $_POST['email'] . ")<br><br>" . $_POST['message']);
             
             $_SESSION['errorMessage'][] = "Děkujeme za zprávu.";
             return $this->redirect("/kontakt");
