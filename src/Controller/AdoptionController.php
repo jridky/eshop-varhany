@@ -196,7 +196,7 @@ class AdoptionController extends AppController
                             
                          $connection->execute("UPDATE pipe SET state = 1 WHERE id = " . $_POST['pipe_id']);
                          
-//                         $this->sendConfirmation($connection, $orderId);
+                         $this->sendConfirmation($connection, $orderId);
                          
                          if(isset($_POST['confirmation'])){
                             if(isset($_POST['country']) && trim($_POST['country']) != ""
@@ -359,14 +359,17 @@ class AdoptionController extends AppController
                     </main>
                   </body>
                 </html>';
-
-        $email = new Mailer('default');
-        $email->setFrom(["adopce@varhanyprokrpole.cz"=>"Varhany pro Královo Pole"]);
-        $email->setEmailFormat("html");
-        $email->setTo($_POST['email']);
-        $email->setReplyTo("adopce@varhanyprokrpole.cz");
-        $email->setBcc("adopce@varhanyprokrpole.cz");
-        $email->setSubject("Platební údaje");
-        $email->deliver($text);   
+        try{
+            $email = new Mailer('default');
+            $email->setFrom(["adopce@varhanyprokrpole.cz"=>"Varhany pro Královo Pole"]);
+            $email->setEmailFormat("html");
+            $email->setTo($_POST['email']);
+            $email->setReplyTo("adopce@varhanyprokrpole.cz");
+            $email->setBcc("adopce@varhanyprokrpole.cz");
+            $email->setSubject("Platební údaje");
+            $email->deliver($text);
+        }catch(\Exception $e){
+            $_SESSION['successMessage'][] = "Email nemohl být odeslán na adresu (" . $data['email'] . ")";
+        }
     }
 }

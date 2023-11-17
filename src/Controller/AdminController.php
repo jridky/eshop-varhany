@@ -24,6 +24,8 @@ use Cake\View\Exception\MissingTemplateException;
 use Cake\Datasource\ConnectionManager;
 use Cake\Filesystem\Folder;
 use \PhpOffice\PhpSpreadsheet\IOFactory;
+use Cake\Mailer\Mailer;
+use Cake\Mailer\TransportFactory;
 
 
 /**
@@ -91,6 +93,19 @@ class AdminController extends AppController
                 break;
             case "objednavky":
                 $this->set("active", "orders");
+                if(isset($_POST['confirm'])){
+                    if($_SESSION['token'] == $_POST['_csrfToken']){
+                        return $this->confirmOrder($connection);
+                    } else {
+                        $_SESSION['errorMessage'][] = "Chyba zpracování";
+                    }
+                } elseif(isset($_POST['reject'])){
+                    if($_SESSION['token'] == $_POST['_csrfToken']){
+                        return $this->rejectOrder($connection);
+                    } else {
+                        $_SESSION['errorMessage'][] = "Chyba zpracování";
+                    }
+                }
                 $this->showOrders($connection);
                 break;
             default: break;
@@ -211,6 +226,140 @@ class AdminController extends AppController
     }
     
     public function showOrders($connection){
+        $unprocessed = $connection->execute("SELECT orders.*, CONCAT(machine.name,', ',rank.name,', ',tone.name) as pipe_name, pipe.price as pipe_price " .
+            "FROM orders, pipe, rank, machine, tone WHERE orders.state = 0 AND orders.pipe_id = pipe.id and pipe.rank_id = rank.id and pipe.machine_id = machine.id " .
+            "and pipe.tone_id = tone.id ORDER BY id DESC")->fetchAll("assoc");
+        $processed = $connection->execute("SELECT orders.*, CONCAT(machine.name,', ',rank.name,', ',tone.name) as pipe_name, pipe.price as pipe_price " .
+            "FROM orders, pipe, rank, machine, tone WHERE orders.state = 1 AND orders.pipe_id = pipe.id and pipe.rank_id = rank.id and pipe.machine_id = machine.id " .
+            "and pipe.tone_id = tone.id ORDER BY id DESC")->fetchAll("assoc");
+        $cancelled = $connection->execute("SELECT orders.*, CONCAT(machine.name,', ',rank.name,', ',tone.name) as pipe_name, pipe.price as pipe_price " .
+            "FROM orders, pipe, rank, machine, tone WHERE orders.state = -1 AND orders.pipe_id = pipe.id and pipe.rank_id = rank.id and pipe.machine_id = machine.id " .
+            "and pipe.tone_id = tone.id ORDER BY id DESC")->fetchAll("assoc");
+
+        $this->set("unprocessed", $unprocessed);
+        $this->set("processed", $processed);
+        $this->set("cancelled", $cancelled);
+    }
     
+    public function confirmOrder($connection){
+        $data = $connection->execute("SELECT p.id, p.price, o.email, CONCAT(machine.name,', ',rank.name,', ',tone.name) as pipe FROM pipe as p, orders as o, machine, rank, tone WHERE o.id = " . $_POST['order_id'] . " AND p.id = o.pipe_id  and p.rank_id = rank.id and p.machine_id = machine.id and p.tone_id = tone.id")->fetch("assoc");
+        
+        $connection->execute("UPDATE orders SET state = 1 WHERE id = " . $_POST['order_id']);
+        $connection->execute("UPDATE pipe SET state = 2 WHERE id = " . $data['id']);
+        
+        $text = '<html lang="en">
+                  <head>
+                    <meta charset="UTF-8" />
+                    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+                    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+                    <link rel="preconnect" href="https://fonts.gstatic.com" />
+                    <link href="https://fonts.googleapis.com/css2?family=Roboto&amp;display=swap"
+                      rel="stylesheet"/>
+                    <title>Document</title>
+                  </head>
+                  <body
+                    style="
+                      max-width: 800px;
+                      min-width: 400px;
+                      padding: 3rem;
+                      margin: auto;
+                      font-family: \'Roboto\', sans-serif;
+                      font-size: 1.125rem;
+                      border: 1px solid black;
+                    ">
+                    <div style="margin-bottom: 2rem">
+                      <div>
+                        <h2 style="margin: 0">Varhany</h2>
+                        <h3 style="margin: 0">pro Královo Pole</h3>
+                      </div>
+                    </div>
+                    <main>
+                      <h2>Dobrý den,</h2>
+                      <p style="margin-top: 4rem; font-weight: 400">
+                        děkujeme za Váš příspěvek. Tímto zasíláme potvrzení o připsání částky <strong>' . number_format($data['price'],0,',','.') . ' Kč</strong>
+                        na adopci píšťaly <strong>' . $data['pipe'] . '</strong> na náš účet.
+                      </p>
+                      <p style="margin-top: 4rem; font-weight: 400">
+                        S pozdravem,<br />
+                        Varhany pro Královo Pole.
+                      </p>
+                    </main>
+                  </body>
+                </html>';
+        try{
+            $email = new Mailer('default');
+            $email->setFrom(["adopce@varhanyprokrpole.cz"=>"Varhany pro Královo Pole"]);
+            $email->setEmailFormat("html");
+            $email->setTo($data['email']);
+            $email->setReplyTo("adopce@varhanyprokrpole.cz");
+            $email->setBcc("adopce@varhanyprokrpole.cz");
+            $email->setSubject("Potvrzení příspěvku");
+            $email->deliver($text);    
+            $_SESSION['successMessage'][] = "Objednávka byla potvrzena.";
+        }catch(\Exception $e){
+            $_SESSION['successMessage'][] = "Objednávka byla potvrzena. Email nemohl být odeslán na adresu (" . $data['email'] . ")";
+        }
+        return $this->redirect("/admin/objednavky");
+    }
+    
+    public function rejectOrder($connection){
+        $data = $connection->execute("SELECT p.id, p.price, o.email, CONCAT(machine.name,', ',rank.name,', ',tone.name) as pipe FROM pipe as p, orders as o, machine, rank, tone WHERE o.id = " . $_POST['order_id'] . " AND p.id = o.pipe_id  and p.rank_id = rank.id and p.machine_id = machine.id and p.tone_id = tone.id")->fetch("assoc");
+        
+        $connection->execute("UPDATE orders SET state = -1, confirmation=0 WHERE id = " . $_POST['order_id']);
+        $connection->execute("UPDATE pipe SET state = 0, owner=NULL WHERE id = " . $data['id']);
+        
+        $text = '<html lang="en">
+                  <head>
+                    <meta charset="UTF-8" />
+                    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+                    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+                    <link rel="preconnect" href="https://fonts.gstatic.com" />
+                    <link href="https://fonts.googleapis.com/css2?family=Roboto&amp;display=swap"
+                      rel="stylesheet"/>
+                    <title>Document</title>
+                  </head>
+                  <body
+                    style="
+                      max-width: 800px;
+                      min-width: 400px;
+                      padding: 3rem;
+                      margin: auto;
+                      font-family: \'Roboto\', sans-serif;
+                      font-size: 1.125rem;
+                      border: 1px solid black;
+                    ">
+                    <div style="margin-bottom: 2rem">
+                      <div>
+                        <h2 style="margin: 0">Varhany</h2>
+                        <h3 style="margin: 0">pro Královo Pole</h3>
+                      </div>
+                    </div>
+                    <main>
+                      <h2>Dobrý den,</h2>
+                      <p style="margin-top: 4rem; font-weight: 400">
+                        oznamujeme Vám, že Vaše rezervace píšťaly <strong>' . $data['pipe'] .  '</strong> ve výši <strong>' . number_format($data['price'],0,',','.') . ' Kč</strong>
+                        byla zrušena. Pokud máte stále zájem o adopci píšťaly, proveďte rezervaci znovu.
+                      </p>
+                      <p style="margin-top: 4rem; font-weight: 400">
+                        S pozdravem,<br />
+                        Varhany pro Královo Pole.
+                      </p>
+                    </main>
+                  </body>
+                </html>';
+        try{
+            $email = new Mailer('default');
+            $email->setFrom(["adopce@varhanyprokrpole.cz"=>"Varhany pro Královo Pole"]);
+            $email->setEmailFormat("html");
+            $email->setTo($data['email']);
+            $email->setReplyTo("adopce@varhanyprokrpole.cz");
+            $email->setBcc("adopce@varhanyprokrpole.cz");
+            $email->setSubject("Zrušení rezervace");
+            $email->deliver($text);    
+            $_SESSION['successMessage'][] = "Objednávka byla zrušena.";
+        }catch(\Exception $e){
+            $_SESSION['successMessage'][] = "Objednávka byla zrušena. Email nemohl být odeslán na adresu (" . $data['email'] . ")";
+        }
+        return $this->redirect("/admin/objednavky"); 
     }
 }

@@ -223,7 +223,7 @@
       tabcontent = document.getElementsByClassName("active-form");
       for (i = 0; i < tabcontent.length; i++) {
         tabcontent[i].style.display = "none";
-        tabcontent[i].style.display = tabcontent[i].className.replace(" active-form", "");
+        tabcontent[i].className = tabcontent[i].className.replace(" active-form", "");
       }
       
       tablinks = document.getElementsByClassName("manuals__button");

@@ -1263,6 +1263,34 @@ code {
     font-size: 13px !important;
 }
 
+.pipe-tooltip.place-top {
+    margin-top: -10px;
+}
+
+.pipe-tooltip.place-top::before {
+    content: "";
+    background-color: inherit;
+    position: absolute;
+    z-index: -1;
+    width: 18px;
+    height: 10px;
+}
+
+.pipe-tooltip.place-top::after {
+    content: "";
+    position: absolute;
+    width: 10px;
+    height: 10px;
+    border-top-right-radius: 0px;
+    border: 1px solid transparent;
+    background-color: #222;
+    z-index: -2;
+    bottom: -6px;
+    left: 50%;
+    margin-left: -6px;
+    transform: rotate(135deg);
+}
+
 .pipe-tooltip.place-bottom {
     margin-top: 10px;
 }
@@ -1370,9 +1398,14 @@ code {
   margin-left: 0;
   visibility: visible;
 }
+
+.__react_component_tooltip.place-top::before {
+  bottom: 0;
+  margin-left: -11px;
+}
+
 .__react_component_tooltip.place-bottom::before {
   top: 0;
- 
   margin-left: -11px;
 }
 

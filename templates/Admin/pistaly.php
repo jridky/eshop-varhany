@@ -96,7 +96,7 @@
       tabcontent = document.getElementsByClassName("active-table");
       for (i = 0; i < tabcontent.length; i++) {
         tabcontent[i].style.display = "none";
-        tabcontent[i].style.display = tabcontent[i].className.replace(" active-table", "");
+        tabcontent[i].className = tabcontent[i].className.replace(" active-table", "");
       }
       
       tablinks = document.getElementsByClassName("manuals__button");
@@ -153,9 +153,16 @@
             document.getElementById("pipe-table__tooltip").style.left = (element.offsetLeft - table.scrollLeft + element.parentNode.offsetWidth) + "px";
             document.getElementById("pipe-table__tooltip").className += " place-right";
         } else {
-            document.getElementById("pipe-table__tooltip").style.top = (element.offsetTop + element.parentNode.offsetHeight - html.scrollTop) + "px";
-            document.getElementById("pipe-table__tooltip").style.left = (element.offsetLeft - (document.getElementById("pipe-table__tooltip").offsetWidth/2) + (element.offsetWidth/2) - table.scrollLeft) + "px";
-            document.getElementById("pipe-table__tooltip").className += " place-bottom";
+            var height = (element.offsetTop + element.parentNode.offsetHeight - html.scrollTop);
+            if((height + document.getElementById("pipe-table__tooltip").offsetHeight) > window.innerHeight){
+                document.getElementById("pipe-table__tooltip").style.top = (element.offsetTop - document.getElementById("pipe-table__tooltip").offsetHeight - html.scrollTop - 10) + "px";
+                document.getElementById("pipe-table__tooltip").style.left = (element.offsetLeft - (document.getElementById("pipe-table__tooltip").offsetWidth/2) + (element.offsetWidth/2) - table.scrollLeft) + "px";
+                document.getElementById("pipe-table__tooltip").className += " place-top";       
+            } else {
+                document.getElementById("pipe-table__tooltip").style.top = (element.offsetTop + element.parentNode.offsetHeight - html.scrollTop) + "px";
+                document.getElementById("pipe-table__tooltip").style.left = (element.offsetLeft - (document.getElementById("pipe-table__tooltip").offsetWidth/2) + (element.offsetWidth/2) - table.scrollLeft) + "px";
+                document.getElementById("pipe-table__tooltip").className += " place-bottom";
+            }
         }
         document.getElementById("pipe-table__tooltip").className += " show";
         
@@ -166,6 +173,7 @@
         document.getElementById("pipe-table__tooltip").className = document.getElementById("pipe-table__tooltip").className.replace(" place-left", "");
         document.getElementById("pipe-table__tooltip").className = document.getElementById("pipe-table__tooltip").className.replace(" place-right", "");        
         document.getElementById("pipe-table__tooltip").className = document.getElementById("pipe-table__tooltip").className.replace(" place-bottom", "");
+        document.getElementById("pipe-table__tooltip").className = document.getElementById("pipe-table__tooltip").className.replace(" place-top", "");
         document.getElementById("pipe-table__tooltip").style.top = "-999em";
         document.getElementById("pipe-table__tooltip").style.left = "-999em";
         document.getElementById("owner-row").style.display = "none";
