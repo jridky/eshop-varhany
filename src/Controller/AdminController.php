@@ -244,7 +244,7 @@ class AdminController extends AppController
     public function confirmOrder($connection){
         $data = $connection->execute("SELECT p.id, p.price, o.email, CONCAT(machine.name,', ',rank.name,', ',tone.name) as pipe FROM pipe as p, orders as o, machine, rank, tone WHERE o.id = " . $_POST['order_id'] . " AND p.id = o.pipe_id  and p.rank_id = rank.id and p.machine_id = machine.id and p.tone_id = tone.id")->fetch("assoc");
         
-        $connection->execute("UPDATE orders SET state = 1 WHERE id = " . $_POST['order_id']);
+        $connection->execute("UPDATE orders SET state = 1, updated=CURRENT_TIMESTAMP WHERE id = " . $_POST['order_id']);
         $connection->execute("UPDATE pipe SET state = 2 WHERE id = " . $data['id']);
         
         $text = '<html lang="en">
@@ -305,7 +305,7 @@ class AdminController extends AppController
     public function rejectOrder($connection){
         $data = $connection->execute("SELECT p.id, p.price, o.email, CONCAT(machine.name,', ',rank.name,', ',tone.name) as pipe FROM pipe as p, orders as o, machine, rank, tone WHERE o.id = " . $_POST['order_id'] . " AND p.id = o.pipe_id  and p.rank_id = rank.id and p.machine_id = machine.id and p.tone_id = tone.id")->fetch("assoc");
         
-        $connection->execute("UPDATE orders SET state = -1, confirmation=0 WHERE id = " . $_POST['order_id']);
+        $connection->execute("UPDATE orders SET state = -1, confirmation=0, updated=CURRENT_TIMESTAMP  WHERE id = " . $_POST['order_id']);
         $connection->execute("UPDATE pipe SET state = 0, owner=NULL WHERE id = " . $data['id']);
         
         $text = '<html lang="en">
