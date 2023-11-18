@@ -48,7 +48,7 @@ class HomePageController extends AppController
         $this->set("active", "home");
         $connection = ConnectionManager::get('default');
         
-        $amount = $connection->execute("SELECT sum(price) as price FROM pipe WHERE state > 0")->fetch("assoc");
+        $amount = $connection->execute("SELECT sum(price) as price FROM pipe WHERE state > 1")->fetch("assoc");
         $this->set("amount", $amount['price']);
 
         try {
