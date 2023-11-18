@@ -99,7 +99,7 @@
                 <?php foreach($r['pipes'] as $key => $p){ ?>
                 <td class="pipe-table__cell">
                     <div class="pipe-table__button-wrapper">
-                        <button data-for="pipe-table__tooltip"  <?= ($p['state'] == 0?"onclick=\"fillDonation(this, 'pipe" . $p['id'] . "')\"":"") ?> onmouseover="showTooltip(this)" onmouseout="hideTooltip(this)" id="pipe<?= $p['id'] ?>" 
+                        <button data-for="pipe-table__tooltip"  <?= ($p['state'] == 0?"onclick=\"fillDonation(this, 'pipe" . $p['id'] . "')\"":"onclick=\"unFillDonation(this)\"") ?> onmouseover="showTooltip(this)" onmouseout="hideTooltip(this)" id="pipe<?= $p['id'] ?>" 
                         rake="<?= $r['name'] ?>" pipe="<?= $m['tones'][$key]['name'] ?>" price="<?= number_format($p['price'],0,',','.') . " Kč" ?>" state="<?= $p['state'] ?>" owner="<?= $p['owner'] ?>" 
                         class="pipe-table__button pipe-table__button<?= ($p['state'] != 0?"--locked":"--available") ?>  
                         <?= ($p['price'] <= 2000?"pipe-table__button--pricepoint1":
@@ -173,6 +173,20 @@
         }
         element.className += " pipe-table__button--selected";
         document.getElementById("form_pipe").value = element.getAttribute("id").replace("pipe","");        
+    }
+    
+    function unFillDonation(element){
+        document.getElementById("donationRake").innerHTML = "---";
+        document.getElementById("donationTone").innerHTML = "---";
+        document.getElementById("donationPrice").innerHTML = "---";
+        document.getElementById("donation-button").className = document.getElementById("donation-button").className.replace(" button__inner--disabled","");
+        document.getElementById("donation-button").className += " button__inner--disabled";
+        var selected = document.getElementsByClassName("pipe-table__button--selected");
+        for (i = 0; i < selected.length; i++){
+            selected[i].className = selected[i].className.replace(" pipe-table__button--selected", "");
+        }
+        element.className += " pipe-table__button--selected";
+        document.getElementById("form_pipe").value = "";        
     }
     
     function submitForm(){
