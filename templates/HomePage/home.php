@@ -49,7 +49,7 @@
                     Přispívání je velice jednoduché. Stačí si vybrat libovolnou píšťalu ze seznamu, vyplnit formulář a&nbsp;zaplatit danou částku
                     bankovním převodem.
                 </p>
-                <a class="home-page__donate-button round-button" href="/adopce">Chci přispět</a>
+                <a class="home-page__donate-button round-button" href="/">Chci přispět</a>
             </div>
         </div>
     </section>

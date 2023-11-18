@@ -4,7 +4,7 @@
             <h2 class="form__heading-text">Formulář pro adopci</h2>
             
             <div class="button ">
-                <button class="button__inner " onclick="window.location='/adopce'">Zpět</button>
+                <button class="button__inner " onclick="window.location='/'">Zpět</button>
             </div>
         </div>
         <div class="form__wrapper">

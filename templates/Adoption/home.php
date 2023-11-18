@@ -137,7 +137,7 @@
             </div>
         </div>
     </div>
-    <form style="dislpay: none" action="/adopce/objednavka" method="post" id="order">
+    <form style="dislpay: none" action="/objednavka" method="post" id="order">
         <input type="hidden" name="_method" value="post">
         <input type="hidden" name="_csrfToken" value="<?= $token ?>">
         <input type="hidden" name="pipe" id="form_pipe">

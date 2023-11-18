@@ -89,7 +89,7 @@ class AdoptionController extends AppController
         } else if(isset($_POST['pipe_id']) && is_numeric($_POST['pipe_id'])){
             return $this->processOrder($connection);
         } else {
-            return $this->redirect("/adopce");
+            return $this->redirect("/");
         }
        
         $token = $this->request->getAttribute('csrfToken');
@@ -168,7 +168,7 @@ class AdoptionController extends AppController
             $this->set("pipe", $pipe);
         } else {
             $_SESSION['errorMessage'][] = "Zvolená píšťala je již adoptována. Vyberte si, prosím, jinou.";
-            return $this->redirect("/adopce");
+            return $this->redirect("/");
         }
     }
     
@@ -179,12 +179,12 @@ class AdoptionController extends AppController
         
         if($state['state'] != 0){
             $_SESSION['errorMessage'][] = "Zvolenou píšťalu si právě někdo adoptoval. Vyberte si, prosím, jinou.";
-            return $this->redirect("/adopce");
+            return $this->redirect("/");
         } else {
             if(!isset($_POST['consent'])){
                 $_SESSION['errorMessage'][] = "Je nutné udělit souhlas se zpracováním osobních údajů.";
                 $_SESSION['desiredPipe'] = $_POST['pipe_id'];
-                return $this->redirect("/adopce/objednavka");
+                return $this->redirect("/objednavka");
             } else {
                 if(isset($_POST['firstName'])){
                     if(isset($_POST['firstName']) && trim($_POST['firstName']) != ""
@@ -224,12 +224,12 @@ class AdoptionController extends AppController
                          
                          $_SESSION['lastOrder'] = $orderId;
                          
-                         return $this->redirect("/adopce/potvrzeni");
+                         return $this->redirect("/potvrzeni");
                 
                     } else {
                         $_SESSION['errorMessage'][] = "Nebyla vyplněna všechna povinná pole.";
                         $_SESSION['desiredPipe'] = $_POST['pipe_id'];
-                        return $this->redirect("/adopce/objednavka");
+                        return $this->redirect("/objednavka");
                     }
                 } else {
                     if(isset($_POST['companyName']) && trim($_POST['companyName']) != ""
@@ -268,12 +268,12 @@ class AdoptionController extends AppController
                          
                          $_SESSION['lastOrder'] = $orderId;
                          
-                         return $this->redirect("/adopce/potvrzeni");
+                         return $this->redirect("/potvrzeni");
                 
                     } else {
                         $_SESSION['errorMessage'][] = "Nebyla vyplněna všechna povinná pole.";
                         $_SESSION['desiredPipe'] = $_POST['pipe_id'];
-                        return $this->redirect("/adopce/objednavka");
+                        return $this->redirect("/objednavka");
                     }
                 }
             }
@@ -286,7 +286,7 @@ class AdoptionController extends AppController
             unset($_SESSION['lastOrder']);
             $this->set("data", $data);
         } else {
-            return $this->redirect("/adopce");
+            return $this->redirect("/");
         }        
     }
     

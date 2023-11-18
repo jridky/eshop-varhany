@@ -48,8 +48,8 @@
             </a>
             <nav class="header__nav">
                 <ul class="header__nav-items ">
-                    <li><a class="header__nav-item<?= ($active == "home"?" header__nav-item--active\" aria-current=\"page":"") ?>" href="/">Informace</a></li>
-                    <li><a class="header__nav-item<?= ($active == "adoption"?" header__nav-item--active\" aria-current=\"page":"") ?>" href="/adopce">Adopce</a></li>
+                    <li><a class="header__nav-item<?= ($active == "home"?" header__nav-item--active\" aria-current=\"page":"") ?>" href="/informace">Informace</a></li>
+                    <li><a class="header__nav-item<?= ($active == "adoption"?" header__nav-item--active\" aria-current=\"page":"") ?>" href="/">Adopce</a></li>
                     <li><a class="header__nav-item<?= ($active == "contact"?" header__nav-item--active\" aria-current=\"page":"") ?>" href="/kontakt">Kontakt</a></li>
                     <li class="header__nav-item header__close-button" onclick="closeMenu()">Zavřít</li>
                 </ul>

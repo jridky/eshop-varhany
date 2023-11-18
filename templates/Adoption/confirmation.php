@@ -35,5 +35,5 @@
             Prosíme o zaslání částky do jednoho týdne, jinak může dojít ke zrušení rezervace.
         </p>
     </div>
-    <a class="bank-transfer-page__button round-button" href="/adopce">Hotovo</a>
+    <a class="bank-transfer-page__button round-button" href="/">Hotovo</a>
 </main>

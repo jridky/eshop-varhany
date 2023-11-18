@@ -55,15 +55,15 @@ return function (RouteBuilder $routes): void {
          * its action called 'display', and we pass a param to select the view file
          * to use (in this case, templates/Pages/home.php)...
          */
-        $builder->connect('/', ['controller' => 'HomePage', 'action' => 'display']);
+        $builder->connect('/informace', ['controller' => 'HomePage', 'action' => 'display']);
         $builder->connect('/kontakt', ['controller' => 'Contact', 'action' => 'display']);
-        $builder->connect('/adopce', ['controller' => 'Adoption', 'action' => 'display']);
-        $builder->connect('/adopce/objednavka/*', ['controller' => 'Adoption', 'action' => 'order']);
-        $builder->connect('/adopce/potvrzeni/*', ['controller' => 'Adoption', 'action' => 'confirmation']);
+        $builder->connect('/', ['controller' => 'Adoption', 'action' => 'display']);
+        $builder->connect('/objednavka/*', ['controller' => 'Adoption', 'action' => 'order']);
+        $builder->connect('/potvrzeni/*', ['controller' => 'Adoption', 'action' => 'confirmation']);
         $builder->connect('/login', ['controller' => 'Auth', 'action' => 'login']);
         $builder->connect('/logout', ['controller' => 'Auth', 'action' => 'logout']);
         $builder->connect('/admin/*', ['controller' => 'Admin', 'action' => 'display']);
-
+        $builder->redirect('/adopce/*', ['controller'=>'Adoption', 'action'=>'display'],['persist'=>true]);
         /*
          * Connect catchall routes for all controllers.
          *
