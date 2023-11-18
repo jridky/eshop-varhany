@@ -346,6 +346,12 @@ class AdoptionController extends AppController
                             </th>
                             <td>' . number_format($data['price'],0,',','.') . ' Kč</td>
                           </tr>
+                          <tr>
+                            <th style="text-align: right; padding-right: 20px; vertical-align: top">QR Platba</th>
+                                <td>
+                                   <img src="https://chart.googleapis.com/chart?cht=qr&chs=200x200&choe=ISO-8859-1&chl=' . urlencode("SPD*1.0*ACC:CZ2303000000000249610162*CC:CZK*AM:" . $data['price'] . "*X-VS:" . $orderID ."*RN:Varhany pro Kr.Pole*MSG:Adopce pistaly - dekujeme za vasi podporu") . '">
+                                </td>
+                          </tr>
                         </tbody>
                       </table>
                       <p style="margin-top: 4rem; font-weight: 400">
