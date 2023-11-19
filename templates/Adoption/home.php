@@ -49,6 +49,10 @@
             <span class="price-legend__label"> - Výše částky</span>
         </div>
         <div class="price-legend__container">
+            <div class="price-legend__available"></div>
+            <span class="price-legend__label"> - K adopci</span>
+        </div>
+        <div class="price-legend__container">
             <div class="price-legend__reserved">
                 <div class="price-legend__reserved-fill">R</div>
             </div>
@@ -59,10 +63,6 @@
                 <div class="price-legend__reserved-fill"></div>
             </div>
             <span class="price-legend__label">- Adoptované</span>
-        </div>
-        <div class="price-legend__container">
-            <div class="price-legend__available"></div>
-            <span class="price-legend__label"> - K adopci</span>
         </div>
     </div>
     <hr class="donation-page__line">
