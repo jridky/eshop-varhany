@@ -14,14 +14,19 @@
                     </button>
                 </div>
                 <ol class="instructions__item-list">
-                    <li class="instructions__item">Vyberte si stroj, ze kterého chcete píšťalu adoptovat.</li>
+                    <li class="instructions__item">Vyberte si stroj, ze kterého chcete píšťalu adoptovat (zatím jen I. manuál).</li>
                     <li class="instructions__item">Pro vybraný stroj se zobrazí tabulka píšťal. V řádcích tabulky se
                         vyskytují rejstříky (sady píšťal) stroje. Sloupce tabulky určují tón píšťaly. Píšťaly jsou barevně rozlišeny podle částky
                         (viz legenda pod výběrem stroje).</li>
                     <li class="instructions__item">Po vybrání píšťaly z tabulky se aktivuje tlačítko pro adopci píšťaly,
-                        které Vás nasměruje na formulář. Částku je možné zaplatit pomocí
-                        bankovního převodu, kdy bude pro Vás píšťala zarezervována a zároveň Vám
-                        budou poskytnuty informace k provedení platby.</li>
+                        které Vás nasměruje na formulář.</li>
+                    <li class="instructions__item">Ve formuláři zadáte stručné kontaktní údaje, zvolíte si jméno dárce pro zveřejnění
+                        a případně doplníte údaje pro potvrzení o daru pro daňové účely.</li>
+                    <li class="instructions__item">Nyní máte píšťalu <b>zarezervovanou</b> a čekáme na Vaši platbu, kterou zašlete <b>bankovním převodem</b>
+                        dle instrukcí zobrazených na stránce (a zaslaných v informačním e-mailu na Vámi uvedenou adresu).
+                        Prosíme o zaslání částky do jednoho týdne, jinak může dojít ke zrušení rezervace.</li>
+                    <li class="instructions__item">O úspěšném doručení daru Vás budeme informovat e-mailem a Vaši píšťalu na webu označíme jako <b>adoptovanou</b>.</li>
+                    <li class="instructions__item">V případě problémů nebo nejasností nás neváhejte kontaktovat na e-mailu <a href="mailto:adopce@varhanyprokrpole.cz" class="contact-info__text">adopce@varhanyprokrpole.cz</a>.</li>
                 </ol>
             </div>
         </div>
