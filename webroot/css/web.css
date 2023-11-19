@@ -161,10 +161,10 @@ html {
   --header-height: 6.5rem;
 
   /* Colors for the individual pricepoints used in the pipe table */
-  --pricepoint-color-1: #d4cb76;
+  --pricepoint-color-1: #c4b310;
   --pricepoint-color-2: #77aece;
   --pricepoint-color-3: #a67dc5;
-  --pricepoint-color-4: #bad473;
+  --pricepoint-color-4: #93b633;
   --pricepoint-color-5: #d47373;
 
   /** Font sizes variables */
@@ -1026,10 +1026,13 @@ code {
 
 .pipe-table__button:not(.pipe-table__button--available)
   > .pipe-table__cell-fill {
-  height: 10px;
-  width: 10px;
-  border-radius: 2px;
+  height: 100%;
+  width: 100%;
   position: absolute;
+  font-size: 14px;
+  font-weight: 700;
+  line-height: 14px;
+  color: white;
 }
 
 
@@ -1228,9 +1231,13 @@ code {
 
 .price-legend__reserved-fill {
   background-color: var(--pricepoint-color-1);
-  height: 12px;
-  width: 12px;
-  border-radius: 2px;
+  height: 100%;
+  width: 100%;
+  font-size: 16px;
+  line-height: 16px;
+  color: white;
+  font-weight: 700;
+  text-align: center;
 }
 
 .price-legend__available {

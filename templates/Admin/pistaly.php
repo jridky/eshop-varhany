@@ -23,9 +23,15 @@
         </div>
         <div class="price-legend__container">
             <div class="price-legend__reserved">
+                <div class="price-legend__reserved-fill">R</div>
+            </div>
+            <span class="price-legend__label">- Zarezervované</span>
+        </div>
+        <div class="price-legend__container">
+            <div class="price-legend__reserved">
                 <div class="price-legend__reserved-fill"></div>
             </div>
-            <span class="price-legend__label">- Zarezervované nebo adoptované</span>
+            <span class="price-legend__label">- Adoptované</span>
         </div>
         <div class="price-legend__container">
             <div class="price-legend__available"></div>
@@ -79,7 +85,7 @@
                             ($p['price'] <= 5000?"pipe-table__button--pricepoint2":
                             ($p['price'] <= 10000?"pipe-table__button--pricepoint3":
                             ($p['price'] <= 20000?"pipe-table__button--pricepoint4":"pipe-table__button--pricepoint5")))) ?>" aria-label="Tlačítko pro výběr píšťaly">
-                            <?= ($p['state'] != 0?"<div class=\"pipe-table__cell-fill\"></div>":"") ?>
+                            <?= ($p['state'] == 1?"<div class=\"pipe-table__cell-fill\">R</div>":($p['state'] == 2?"<div class=\"pipe-table__cell-fill\"></div>":"")) ?>
                         </button>
                     </div>
                 </td>
