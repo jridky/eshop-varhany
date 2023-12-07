@@ -6,7 +6,7 @@
             <tbody>
                 <tr>
                     <th>Bankovní účet:</th>
-                    <td>249610162/0300</td>
+                    <td>6092751369/0800</td>
                 </tr>
                 <tr>
                     <th>Variabilní symbol:</th>
@@ -19,7 +19,7 @@
                 <tr>
                     <th style="vertical-align: top">QR Platba:</th>
                     <td>
-                        <img src="https://chart.googleapis.com/chart?cht=qr&chs=200x200&choe=ISO-8859-1&chl=<?= urlencode("SPD*1.0*ACC:CZ2303000000000249610162*CC:CZK*AM:" . $data['price'] . "*X-VS:" . $data['id'] . "*RN:Varhany pro Kr.Pole*MSG:Adopce pistaly - dekujeme za vasi podporu")?>">
+                        <img src="https://chart.googleapis.com/chart?cht=qr&chs=200x200&choe=ISO-8859-1&chl=<?= urlencode("SPD*1.0*ACC:CZ4608000000006092751369*CC:CZK*AM:" . $data['price'] . "*X-VS:" . $data['id'] . "*RN:Varhany pro Kr. Pole*MSG:Adopce pistaly - dekujeme za vasi podporu")?>">
                     </td>
             </tbody>
         </table>
@@ -27,6 +27,9 @@
         <p class="bank-transfer-page__instructions-text">
             Vybranou píšťalu jsme pro Vás zarezervovali. Pro dokončení příspěvku zašlete částku na uvedený bankovní účet
             s variabilním symbolem. Děkujeme.
+        </p>
+        <p class="bank-transfer-page__instructions-text">
+            Výše uvedený bankovní účet je transparentní účet veřejné sbírky. Alternativně lze peníze zaslat na provozní účet spolku Varhany pro Královo Pole 249610162/0300, což je vhodné zejména pro osoby z farnosti a známé, kteří chtějí zůstat v anonymitě.
         </p>
     </section>
     <div class="bank-transfer-page__warning">

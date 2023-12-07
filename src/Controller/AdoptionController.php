@@ -332,7 +332,7 @@ class AdoptionController extends AppController
                             <th style="text-align: right; padding-right: 20px">
                               Bankovní účet:
                             </th>
-                            <td>249610162/0300</td>
+                            <td>6092751369/0800</td>
                           </tr>
                           <tr>
                             <th style="text-align: right; padding-right: 20px">
@@ -349,11 +349,15 @@ class AdoptionController extends AppController
                           <tr>
                             <th style="text-align: right; padding-right: 20px; vertical-align: top">QR Platba</th>
                                 <td>
-                                   <img src="https://chart.googleapis.com/chart?cht=qr&chs=200x200&choe=ISO-8859-1&chl=' . urlencode("SPD*1.0*ACC:CZ2303000000000249610162*CC:CZK*AM:" . $data['price'] . "*X-VS:" . $orderID ."*RN:Varhany pro Kr.Pole*MSG:Adopce pistaly - dekujeme za vasi podporu") . '">
+                                   <img src="https://chart.googleapis.com/chart?cht=qr&chs=200x200&choe=ISO-8859-1&chl=' . urlencode("SPD*1.0*ACC:CZ4608000000006092751369*CC:CZK*AM:" . $data['price'] . "*X-VS:" . $orderID ."*RN:Varhany pro Kr. Pole*MSG:Adopce pistaly - dekujeme za vasi podporu") . '">
                                 </td>
                           </tr>
                         </tbody>
                       </table>
+                      <p style="margin-top: 4rem; font-weight: 400">
+                        Výše uvedený bankovní účet je transparentní účet veřejné sbírky.
+                        Alternativně lze peníze zaslat na provozní účet spolku Varhany pro Královo Pole 249610162/0300, což je vhodné zejména pro osoby z farnosti a známé, kteří chtějí zůstat v anonymitě.
+                      </p>
                       <p style="margin-top: 4rem; font-weight: 400">
                         Po kontrole připsání částky na náš účet Vám bude zaslán
                         potvrzující email.

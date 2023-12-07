@@ -66,7 +66,8 @@
                         <svg class="MuiSvgIcon-root" focusable="false" viewBox="0 0 24 24" aria-hidden="true"><path d="M10 20v-6h4v6h5v-8h3L12 3 2 12h3v8z"></path></svg>
                         <span class="contact-info__item-heading">Bankovní spojení:</span>
                     </div>
-                    <p class="contact-info__text">249610162/0300</p>
+                    <p class="contact-info__text">6092751369/0800 - transparentní účet veřejné sbírky na varhany</p>
+                    <p class="contact-info__text">249610162/0300 - provozní účet spolku Varhany pro Královo Pole</p>
                 </div>
             </div>
         </div>
