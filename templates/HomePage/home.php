@@ -29,7 +29,7 @@
                 <h1 class="home-page__heading">Kolik budou nové varhany stát a&nbsp;kdy budou hotové?</h1>
                 <p class="home-page__text">
                     Celková potřebná částka je cca 25&nbsp;milionů korun. Aktuálně je vybraný návrh ve schvalovacím procesu u&nbsp;Národního památkového úřadu.
-                    Podpis smlouvy plánujeme do konce roku 2023. Doba trvání vlastní stavby varhan je asi 3&nbsp;roky, tuto dobu využijeme k&nbsp;výběru zbývajících
+                    Podpis smlouvy plánujeme do konce roku 2024. Doba trvání vlastní stavby varhan je asi 3&nbsp;roky, tuto dobu využijeme k&nbsp;výběru zbývajících
                     finančních prostředků.
                 </p>
             </div>
