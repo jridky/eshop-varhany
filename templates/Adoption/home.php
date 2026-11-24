@@ -14,7 +14,7 @@
                     </button>
                 </div>
                 <ol class="instructions__item-list">
-                    <li class="instructions__item">Vyberte si stroj, ze kterého chcete píšťalu adoptovat (zatím jen I. manuál).</li>
+                    <li class="instructions__item">Vyberte si stroj, ze kterého chcete píšťalu adoptovat.</li>
                     <li class="instructions__item">Pro vybraný stroj se zobrazí tabulka píšťal. V řádcích tabulky se
                         vyskytují rejstříky (sady píšťal) stroje. Sloupce tabulky určují tón píšťaly. Píšťaly jsou barevně rozlišeny podle částky
                         (viz legenda pod výběrem stroje).</li>
