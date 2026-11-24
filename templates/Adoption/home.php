@@ -107,11 +107,14 @@
             <?php foreach($m['ranks'] as $r){ ?>
             <tr class="pipe-table__row">
                 <th scope="row" class="pipe-table__heading pipe-table__heading--left"><?= $r['name'] ?></th>
-                <?php foreach($r['pipes'] as $key => $p){ ?>
+                <?php foreach($m['tones'] as $t){ $p = $r['pipes'][$t['id']] ?? null; ?>
+                <?php if($p === null){ ?>
+                <td class="pipe-table__cell"></td>
+                <?php continue; } ?>
                 <td class="pipe-table__cell">
                     <div class="pipe-table__button-wrapper">
                         <button data-for="pipe-table__tooltip"  <?= ($p['state'] == 0?"onclick=\"fillDonation(this, 'pipe" . $p['id'] . "')\"":"onclick=\"unFillDonation(this)\"") ?> onmouseover="showTooltip(this)" onmouseout="hideTooltip(this)" id="pipe<?= $p['id'] ?>" 
-                        rake="<?= $r['name'] ?>" pipe="<?= $m['tones'][$key]['name'] ?>" price="<?= number_format($p['price'],0,',','.') . " Kč" ?>" state="<?= $p['state'] ?>" owner="<?= $p['owner'] ?>" 
+                        rake="<?= $r['name'] ?>" pipe="<?= $t['name'] ?>" price="<?= number_format($p['price'],0,',','.') . " Kč" ?>" state="<?= $p['state'] ?>" owner="<?= $p['owner'] ?>" 
                         class="pipe-table__button pipe-table__button<?= ($p['state'] != 0?"--locked":"--available") ?>  
                         <?= ($p['price'] <= 2000?"pipe-table__button--pricepoint1":
                             ($p['price'] <= 5000?"pipe-table__button--pricepoint2":

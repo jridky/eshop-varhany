@@ -170,7 +170,15 @@ class AdminController extends AppController
                         if($j == 0){
                             $rankId = $connection->execute("INSERT INTO rank (machine_id, name) VALUES (" . $machineId . ", '" . $data[$i][$j] . "')")->lastInsertId();
                         } else {
-                            $connection->execute("INSERT INTO pipe (rank_id, machine_id, tone_id, price, state) VALUES (" . $rankId . ", " . $machineId . ", " . $tunes[$j] . ", " . $data[$i][$j] . ", 0)");
+                            $price = trim((string)$data[$i][$j]);
+                            if ($price === "") {
+                                // prázdná buňka = píšťala není k adopci, nevytváří se
+                                continue;
+                            }
+                            if (!is_numeric($price)) {
+                                throw new \Exception("Neplatná cena \"" . $price . "\" (řádek " . ($i + 1) . ", sloupec " . ($j + 1) . ")");
+                            }
+                            $connection->execute("INSERT INTO pipe (rank_id, machine_id, tone_id, price, state) VALUES (" . $rankId . ", " . $machineId . ", " . $tunes[$j] . ", " . (float)$price . ", 0)");
                         }
                     } 
                 }
@@ -181,6 +189,7 @@ class AdminController extends AppController
             }
 
         }catch(\Exception $e){
+            try { $connection->execute("ROLLBACK;"); } catch(\Exception $ignored) {}
             switch($e->getMessage()){
                 case "file": $_SESSION['errorMessage'][] = "Špatný typ souboru";
                             break;
@@ -215,8 +224,9 @@ class AdminController extends AppController
             $ranks = $connection->execute("SELECT id, name FROM rank WHERE machine_id = " . $m['id'] . " ORDER BY name, id")->fetchAll("assoc");
 
             foreach($ranks as $rkey => $r){
-                $pipes = $connection->execute("SELECT id, price, state, owner FROM pipe WHERE machine_id = " . $m['id'] . " AND rank_id = " . $r['id'] . " ORDER BY tone_id")->fetchAll("assoc");
-                $ranks[$rkey]['pipes'] = $pipes;
+                $pipes = $connection->execute("SELECT id, price, state, owner, tone_id FROM pipe WHERE machine_id = " . $m['id'] . " AND rank_id = " . $r['id'] . " ORDER BY tone_id")->fetchAll("assoc");
+                // indexováno podle tone_id, aby chybějící píšťaly neposunuly sloupce
+                $ranks[$rkey]['pipes'] = array_column($pipes, null, 'tone_id');
             }
 
             $machines[$key]['ranks'] = $ranks;
