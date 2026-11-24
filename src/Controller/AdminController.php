@@ -142,23 +142,23 @@ class AdminController extends AppController
                     throw new \Exception("file");
                 }
 
-                $check = $connection->execute("SELECT id FROM machine WHERE name like('" . $_POST['name'] . "')")->fetch("assoc");
+                $check = $connection->execute("SELECT id FROM machine WHERE name = ?", [$_POST['name']])->fetch("assoc");
 
                 if($check != null){
                     $_SESSION['errorMessage'][] = "Tento název stroje již existuje";
                     return $this->redirect("/admin/data");
                 }
                 $connection->execute("START TRANSACTION;");
-                $machineId = $connection->execute("INSERT INTO machine (name) VALUES ('" . $_POST['name'] . "')")->lastInsertId();
+                $machineId = $connection->execute("INSERT INTO machine (name) VALUES (?)", [$_POST['name']])->lastInsertId();
                 $file = IOFactory::load($_FILES['machine']['tmp_name']);
                 $data = $file->getActiveSheet()->toArray(NULL,TRUE,FALSE,FALSE);
 
                 $tunes = array();
                 //process tunes
                 for($i = 1; $i < sizeof($data[0]); $i++){
-                    $tuneId = $connection->execute('SELECT id FROM tone WHERE name LIKE BINARY ("' . $data[0][$i] . '") and machine_id = ' . $machineId)->fetch("assoc");
+                    $tuneId = $connection->execute("SELECT id FROM tone WHERE name LIKE BINARY ? AND machine_id = ?", [$data[0][$i], $machineId])->fetch("assoc");
                     if($tuneId == null){
-                        $tunes[$i] = $connection->execute('INSERT INTO tone (name, machine_id) VALUES ("' . $data[0][$i] . '", ' . $machineId . ')')->lastInsertId();
+                        $tunes[$i] = $connection->execute("INSERT INTO tone (name, machine_id) VALUES (?, ?)", [$data[0][$i], $machineId])->lastInsertId();
                     } else {
                         $tunes[$i] = $tuneId['id'];
                     }
@@ -168,7 +168,7 @@ class AdminController extends AppController
                     $rankId = 0;
                     for($j = 0; $j < sizeof($data[$i]); $j++){
                         if($j == 0){
-                            $rankId = $connection->execute("INSERT INTO rank (machine_id, name) VALUES (" . $machineId . ", '" . $data[$i][$j] . "')")->lastInsertId();
+                            $rankId = $connection->execute("INSERT INTO rank (machine_id, name) VALUES (?, ?)", [$machineId, $data[$i][$j]])->lastInsertId();
                         } else {
                             $price = trim((string)$data[$i][$j]);
                             if ($price === "") {
@@ -204,10 +204,11 @@ class AdminController extends AppController
 
     public function deleteMachine($connection){
 
-        $connection->execute("DELETE FROM machine WHERE id = " . $_POST['machineId']);
-        $connection->execute("DELETE FROM pipe WHERE machine_id = " . $_POST['machineId']);
-        $connection->execute("DELETE FROM rank WHERE machine_id = " . $_POST['machineId']);
-        $connection->execute("DELETE FROM tone WHERE machine_id = " . $_POST['machineId']);
+        $machineId = (int)$_POST['machineId'];
+        $connection->execute("DELETE FROM machine WHERE id = ?", [$machineId]);
+        $connection->execute("DELETE FROM pipe WHERE machine_id = ?", [$machineId]);
+        $connection->execute("DELETE FROM rank WHERE machine_id = ?", [$machineId]);
+        $connection->execute("DELETE FROM tone WHERE machine_id = ?", [$machineId]);
 
         $_SESSION['successMessage'][] = "Celý stroj byl odebrán.";
         return $this->redirect('/admin/data');
@@ -252,10 +253,15 @@ class AdminController extends AppController
     }
     
     public function confirmOrder($connection){
-        $data = $connection->execute("SELECT p.id, p.price, o.email, CONCAT(machine.name,', ',rank.name,', ',tone.name) as pipe FROM pipe as p, orders as o, machine, rank, tone WHERE o.id = " . $_POST['order_id'] . " AND p.id = o.pipe_id  and p.rank_id = rank.id and p.machine_id = machine.id and p.tone_id = tone.id")->fetch("assoc");
-        
-        $connection->execute("UPDATE orders SET state = 1, updated=CURRENT_TIMESTAMP WHERE id = " . $_POST['order_id']);
-        $connection->execute("UPDATE pipe SET state = 2 WHERE id = " . $data['id']);
+        if(!is_numeric($_POST['order_id'])){
+            $_SESSION['errorMessage'][] = "Neplatná objednávka.";
+            return $this->redirect("/admin/objednavky");
+        }
+        $orderId = (int)$_POST['order_id'];
+        $data = $connection->execute("SELECT p.id, p.price, o.email, CONCAT(machine.name,', ',rank.name,', ',tone.name) as pipe FROM pipe as p, orders as o, machine, rank, tone WHERE o.id = ? AND p.id = o.pipe_id and p.rank_id = rank.id and p.machine_id = machine.id and p.tone_id = tone.id", [$orderId])->fetch("assoc");
+
+        $connection->execute("UPDATE orders SET state = 1, updated=CURRENT_TIMESTAMP WHERE id = ?", [$orderId]);
+        $connection->execute("UPDATE pipe SET state = 2 WHERE id = ?", [$data['id']]);
         
         $text = '<html lang="en">
                   <head>
@@ -313,10 +319,15 @@ class AdminController extends AppController
     }
     
     public function rejectOrder($connection){
-        $data = $connection->execute("SELECT p.id, p.price, o.email, CONCAT(machine.name,', ',rank.name,', ',tone.name) as pipe FROM pipe as p, orders as o, machine, rank, tone WHERE o.id = " . $_POST['order_id'] . " AND p.id = o.pipe_id  and p.rank_id = rank.id and p.machine_id = machine.id and p.tone_id = tone.id")->fetch("assoc");
-        
-        $connection->execute("UPDATE orders SET state = -1, confirmation=0, updated=CURRENT_TIMESTAMP  WHERE id = " . $_POST['order_id']);
-        $connection->execute("UPDATE pipe SET state = 0, owner=NULL WHERE id = " . $data['id']);
+        if(!is_numeric($_POST['order_id'])){
+            $_SESSION['errorMessage'][] = "Neplatná objednávka.";
+            return $this->redirect("/admin/objednavky");
+        }
+        $orderId = (int)$_POST['order_id'];
+        $data = $connection->execute("SELECT p.id, p.price, o.email, CONCAT(machine.name,', ',rank.name,', ',tone.name) as pipe FROM pipe as p, orders as o, machine, rank, tone WHERE o.id = ? AND p.id = o.pipe_id and p.rank_id = rank.id and p.machine_id = machine.id and p.tone_id = tone.id", [$orderId])->fetch("assoc");
+
+        $connection->execute("UPDATE orders SET state = -1, confirmation=0, updated=CURRENT_TIMESTAMP WHERE id = ?", [$orderId]);
+        $connection->execute("UPDATE pipe SET state = 0, owner=NULL WHERE id = ?", [$data['id']]);
         
         $text = '<html lang="en">
                   <head>
