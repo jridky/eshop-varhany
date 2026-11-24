@@ -62,7 +62,7 @@ class AdminController extends AppController
         $connection = ConnectionManager::get('default');
 
         if(count($path) < 1){
-            $path = array("data");
+            $path = array("objednavky");
         }
 
         if($path[0] == "." || $path[0] == ".."){
