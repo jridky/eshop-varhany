@@ -6,24 +6,6 @@
     </div>
     <?php } ?>
     <div class="contact-page__container">    
-        <form action="" class="contact-page__form" method="post">
-            <input type="hidden" name="_method" value="post">
-            <input type="hidden" name="_csrfToken" value="<?= $token ?>">
-            <div class="input-field">
-                <label class="input-label" for="name">Jméno</label>
-                <input id="name" class="input-field__input contact-page__small-input" name="name" type="text" maxlength="100" required>
-                <p class="input-field__error-text">&nbsp;</p>
-            </div>
-            <div class="input-field">
-                <label class="input-label" for="email">Email</label>
-                <input id="email" class="input-field__input contact-page__small-input" name="email" type="email" maxlength="150" required>
-                <p class="input-field__error-text">&nbsp;</p>
-            </div>
-            <label class="input-label">Zpráva</label>
-            <textarea name="message" class="contact-page__message" rows="7" maxlength="500" required></textarea>
-            <p class="input-field__error-text"></p>
-            <input type="submit" value="Odeslat" name="send" class="action-button contact-page__button">
-        </form>
         <div class="contact-info">
             <div class="contact-info__items">
                 <div class="contact-info__item">

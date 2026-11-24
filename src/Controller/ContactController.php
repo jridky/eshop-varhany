@@ -21,8 +21,6 @@ use Cake\Http\Exception\ForbiddenException;
 use Cake\Http\Exception\NotFoundException;
 use Cake\Http\Response;
 use Cake\View\Exception\MissingTemplateException;
-use Cake\Mailer\Mailer;
-use Cake\Mailer\TransportFactory;
 
 /**
  * Static content controller
@@ -49,10 +47,6 @@ class ContactController extends AppController
     {
 
         $this->set("active", "contact");
-        
-        if(isset($_POST['send'])){
-            return $this->sendMessage();
-        }
 
         $this->set("flashCount", parent::printFlush());
         $token = $this->request->getAttribute('csrfToken');
@@ -67,26 +61,5 @@ class ContactController extends AppController
             }
             throw new NotFoundException();
         }
-    }
-    
-    public function sendMessage(){
-        if(isset($_POST['name']) && trim($_POST['name']) != ""
-            && isset($_POST['email']) && trim($_POST['email']) != ""
-            && isset($_POST['message']) && trim($_POST['message']) != ""){
-       
-            $email = new Mailer('default');
-            $email->setFrom("adopce@varhanyprokrpole.cz");
-            $email->setEmailFormat("html");
-            $email->setTo("adopce@varhanyprokrpole.cz");
-            $email->setSubject("Zpráva z webu");
-            $email->deliver("Zpráva z webu Varhany pro Královo Pole od " . $_POST['name'] . " (" . $_POST['email'] . ")<br><br>" . $_POST['message']);
-            
-            $_SESSION['errorMessage'][] = "Děkujeme za zprávu.";
-            return $this->redirect("/kontakt");
-        } else {
-            $_SESSION['errorMessage'][] = "Vyplňte, prosím, všechna pole.";
-            return $this->redirect("/kontakt");
-        }
-            
     }
 }
