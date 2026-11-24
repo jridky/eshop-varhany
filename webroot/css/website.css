@@ -608,7 +608,6 @@ code {
   padding: 0 1rem;
   display: flex;
   flex-direction: column;
-  justify-content: center;
   align-items: flex-start;
 }
 
@@ -647,10 +646,6 @@ code {
 }
 
 @media only screen and (min-width: 800px) {
-  .contact-info {
-    align-items: center;
-  }
-
   .contact-info__items {
     grid-template-columns: 1fr;
   }
