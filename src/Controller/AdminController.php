@@ -72,9 +72,18 @@ class AdminController extends AppController
         switch($path[0]){
             case "data":
                 $this->set("active", "data");
-                if(isset($_POST['load'])){
+                $exportId = $this->request->getQuery('export');
+                if($exportId !== null && is_numeric($exportId)){
+                    return $this->exportMachineCSV($connection, (int)$exportId);
+                } elseif(isset($_POST['load'])){
                     if($_SESSION['token'] == $_POST['_csrfToken'] && $_POST['name'] != ""){
                         return $this->processCSV($connection);
+                    } else {
+                        $_SESSION['errorMessage'][] = "Chyba zpracování";
+                    }
+                } elseif(isset($_POST['update'])){
+                    if($_SESSION['token'] == $_POST['_csrfToken'] && is_numeric($_POST['updateMachineId'])){
+                        return $this->updateMachineCSV($connection);
                     } else {
                         $_SESSION['errorMessage'][] = "Chyba zpracování";
                     }
@@ -95,7 +104,19 @@ class AdminController extends AppController
                 $this->set("active", "orders");
                 if(isset($_POST['confirm'])){
                     if($_SESSION['token'] == $_POST['_csrfToken']){
-                        return $this->confirmOrder($connection);
+                        return $this->confirmOrder($connection, 1);
+                    } else {
+                        $_SESSION['errorMessage'][] = "Chyba zpracování";
+                    }
+                } elseif(isset($_POST['confirm-account'])){
+                    if($_SESSION['token'] == $_POST['_csrfToken']){
+                        return $this->confirmOrder($connection, 2);
+                    } else {
+                        $_SESSION['errorMessage'][] = "Chyba zpracování";
+                    }
+                } elseif(isset($_POST['confirm-public'])){
+                    if($_SESSION['token'] == $_POST['_csrfToken']){
+                        return $this->confirmOrder($connection, 3);
                     } else {
                         $_SESSION['errorMessage'][] = "Chyba zpracování";
                     }
@@ -127,6 +148,177 @@ class AdminController extends AppController
         }
 
         return $this->render();
+    }
+
+    public function exportMachineCSV($connection, int $machineId){
+        $machine = $connection->execute("SELECT id, name FROM machine WHERE id = ?", [$machineId])->fetch("assoc");
+        if(!$machine){
+            $_SESSION['errorMessage'][] = "Stroj nenalezen.";
+            return $this->redirect("/admin/data");
+        }
+
+        $tones = $connection->execute("SELECT id, name FROM tone WHERE machine_id = ? ORDER BY id", [$machineId])->fetchAll("assoc");
+        $ranks = $connection->execute("SELECT id, name FROM rank WHERE machine_id = ? ORDER BY name, id", [$machineId])->fetchAll("assoc");
+
+        $buf = fopen('php://temp', 'r+');
+
+        $header = ["Rejstřík / Tón"];
+        foreach($tones as $tone) $header[] = $tone['name'];
+        fputcsv($buf, $header);
+
+        foreach($ranks as $rank){
+            $pipes = $connection->execute(
+                "SELECT tone_id, price, state FROM pipe WHERE rank_id = ? AND machine_id = ?",
+                [$rank['id'], $machineId]
+            )->fetchAll("assoc");
+            $pipesByTone = array_column($pipes, null, 'tone_id');
+
+            $row = [$rank['name']];
+            foreach($tones as $tone){
+                if(!isset($pipesByTone[$tone['id']])){
+                    $row[] = "";
+                } else {
+                    $pipe = $pipesByTone[$tone['id']];
+                    $row[] = ((int)$pipe['state'] >= 1) ? "Obsazeno" : (int)$pipe['price'];
+                }
+            }
+            fputcsv($buf, $row);
+        }
+
+        rewind($buf);
+        $csv = stream_get_contents($buf);
+        fclose($buf);
+
+        $safeName = preg_replace('/[^a-zA-Z0-9_-]/', '_', $machine['name']);
+        $filename = "export_" . $safeName . "_" . date('Y-m-d') . ".csv";
+
+        return $this->response
+            ->withType('text/csv')
+            ->withHeader('Content-Disposition', 'attachment; filename="' . $filename . '"')
+            ->withStringBody($csv);
+    }
+
+    public function updateMachineCSV($connection){
+        $warnings = [];
+        $stats = ['ranks_updated' => 0, 'ranks_created' => 0, 'pipes_updated' => 0, 'pipes_created' => 0];
+
+        try{
+            if($_FILES['machine']['name'] == ""){
+                throw new \Exception("no-file");
+            }
+            if(strpos($_FILES['machine']['type'], "spreadsheet") === false &&
+               strpos($_FILES['machine']['type'], "text/csv") === false &&
+               strpos($_FILES['machine']['type'], "excel") === false){
+                throw new \Exception("file");
+            }
+
+            $machineId = (int)$_POST['updateMachineId'];
+            $machine = $connection->execute("SELECT id, name FROM machine WHERE id = ?", [$machineId])->fetch("assoc");
+            if(!$machine){
+                throw new \Exception("Stroj nenalezen.");
+            }
+
+            $connection->execute("START TRANSACTION;");
+
+            $file = IOFactory::load($_FILES['machine']['tmp_name']);
+            $data = $file->getActiveSheet()->toArray(NULL, TRUE, FALSE, FALSE);
+
+            $existingTones = $connection->execute(
+                "SELECT id, name FROM tone WHERE machine_id = ?", [$machineId]
+            )->fetchAll("assoc");
+            $tonesByName = array_column($existingTones, 'id', 'name');
+
+            $existingRanks = $connection->execute(
+                "SELECT id, name FROM rank WHERE machine_id = ?", [$machineId]
+            )->fetchAll("assoc");
+            $ranksByName = array_column($existingRanks, 'id', 'name');
+
+            // Map CSV column index → tone_id
+            $csvTones = [];
+            for($i = 1; $i < count($data[0]); $i++){
+                $toneName = trim((string)$data[0][$i]);
+                if($toneName === "") continue;
+                if(isset($tonesByName[$toneName])){
+                    $csvTones[$i] = $tonesByName[$toneName];
+                } else {
+                    $newId = $connection->execute(
+                        "INSERT INTO tone (name, machine_id) VALUES (?, ?)", [$toneName, $machineId]
+                    )->lastInsertId();
+                    $csvTones[$i] = $newId;
+                    $tonesByName[$toneName] = $newId;
+                }
+            }
+
+            for($i = 1; $i < count($data); $i++){
+                $rankName = trim((string)$data[$i][0]);
+                if($rankName === "") continue;
+
+                if(isset($ranksByName[$rankName])){
+                    $rankId = $ranksByName[$rankName];
+                    $stats['ranks_updated']++;
+                } else {
+                    $rankId = $connection->execute(
+                        "INSERT INTO rank (machine_id, name) VALUES (?, ?)", [$machineId, $rankName]
+                    )->lastInsertId();
+                    $ranksByName[$rankName] = $rankId;
+                    $stats['ranks_created']++;
+                }
+
+                $existingPipes = $connection->execute(
+                    "SELECT id, price, state, tone_id FROM pipe WHERE rank_id = ? AND machine_id = ?",
+                    [$rankId, $machineId]
+                )->fetchAll("assoc");
+                $pipesByTone = array_column($existingPipes, null, 'tone_id');
+
+                for($j = 1; $j < count($data[$i]); $j++){
+                    if(!isset($csvTones[$j])) continue;
+
+                    $cellValue = trim((string)$data[$i][$j]);
+                    $toneId = $csvTones[$j];
+
+                    if($cellValue === "" || strtolower($cellValue) === "obsazeno") continue;
+
+                    if(!is_numeric($cellValue)){
+                        throw new \Exception("Neplatná hodnota \"" . $cellValue . "\" (řádek " . ($i + 1) . ", sloupec " . ($j + 1) . ")");
+                    }
+
+                    $newPrice = (float)$cellValue;
+
+                    if(isset($pipesByTone[$toneId])){
+                        $pipe = $pipesByTone[$toneId];
+                        if((int)$pipe['state'] >= 1){
+                            $warnings[] = "Rejstřík \"" . $rankName . "\" / tón \"" . trim((string)$data[0][$j]) . "\" – píšťala je rezervovaná nebo adoptovaná, cena nebyla změněna.";
+                        } else {
+                            $connection->execute("UPDATE pipe SET price = ? WHERE id = ?", [$newPrice, $pipe['id']]);
+                            $stats['pipes_updated']++;
+                        }
+                    } else {
+                        $connection->execute(
+                            "INSERT INTO pipe (rank_id, machine_id, tone_id, price, state) VALUES (?, ?, ?, ?, 0)",
+                            [$rankId, $machineId, $toneId, $newPrice]
+                        );
+                        $stats['pipes_created']++;
+                    }
+                }
+            }
+
+            $connection->execute("COMMIT;");
+
+            $_SESSION['successMessage'][] = "Hotovo – rejstříky aktualizovány: {$stats['ranks_updated']}, vytvořeny: {$stats['ranks_created']}; píšťaly aktualizovány: {$stats['pipes_updated']}, vytvořeny: {$stats['pipes_created']}.";
+            foreach($warnings as $w){
+                $_SESSION['warningMessage'][] = $w;
+            }
+
+        }catch(\Exception $e){
+            try { $connection->execute("ROLLBACK;"); } catch(\Exception $ignored) {}
+            switch($e->getMessage()){
+                case "file":    $_SESSION['errorMessage'][] = "Špatný typ souboru"; break;
+                case "no-file": $_SESSION['errorMessage'][] = "Není soubor – nejsou data"; break;
+                default:        $_SESSION['errorMessage'][] = "CSV nelze zpracovat: " . $e->getMessage();
+            }
+        }
+
+        return $this->redirect("/admin/data");
     }
 
     public function showData($connection){
@@ -241,7 +433,7 @@ class AdminController extends AppController
             "FROM orders, pipe, rank, machine, tone WHERE orders.state = 0 AND orders.pipe_id = pipe.id and pipe.rank_id = rank.id and pipe.machine_id = machine.id " .
             "and pipe.tone_id = tone.id ORDER BY id DESC")->fetchAll("assoc");
         $processed = $connection->execute("SELECT orders.*, CONCAT(machine.name,', ',rank.name,', ',tone.name) as pipe_name, pipe.price as pipe_price " .
-            "FROM orders, pipe, rank, machine, tone WHERE orders.state = 1 AND orders.pipe_id = pipe.id and pipe.rank_id = rank.id and pipe.machine_id = machine.id " .
+            "FROM orders, pipe, rank, machine, tone WHERE orders.state > 0 AND orders.pipe_id = pipe.id and pipe.rank_id = rank.id and pipe.machine_id = machine.id " .
             "and pipe.tone_id = tone.id ORDER BY id DESC")->fetchAll("assoc");
         $cancelled = $connection->execute("SELECT orders.*, CONCAT(machine.name,', ',rank.name,', ',tone.name) as pipe_name, pipe.price as pipe_price " .
             "FROM orders, pipe, rank, machine, tone WHERE orders.state = -1 AND orders.pipe_id = pipe.id and pipe.rank_id = rank.id and pipe.machine_id = machine.id " .
@@ -252,7 +444,7 @@ class AdminController extends AppController
         $this->set("cancelled", $cancelled);
     }
     
-    public function confirmOrder($connection){
+    public function confirmOrder($connection, int $paymentState = 1){
         if(!is_numeric($_POST['order_id'])){
             $_SESSION['errorMessage'][] = "Neplatná objednávka.";
             return $this->redirect("/admin/objednavky");
@@ -260,7 +452,7 @@ class AdminController extends AppController
         $orderId = (int)$_POST['order_id'];
         $data = $connection->execute("SELECT p.id, p.price, o.email, CONCAT(machine.name,', ',rank.name,', ',tone.name) as pipe FROM pipe as p, orders as o, machine, rank, tone WHERE o.id = ? AND p.id = o.pipe_id and p.rank_id = rank.id and p.machine_id = machine.id and p.tone_id = tone.id", [$orderId])->fetch("assoc");
 
-        $connection->execute("UPDATE orders SET state = 1, updated=CURRENT_TIMESTAMP WHERE id = ?", [$orderId]);
+        $connection->execute("UPDATE orders SET state = ?, updated=CURRENT_TIMESTAMP WHERE id = ?", [$paymentState, $orderId]);
         $connection->execute("UPDATE pipe SET state = 2 WHERE id = ?", [$data['id']]);
         
         $text = '<html lang="en">
