@@ -16,7 +16,7 @@
                 <ol class="instructions__item-list">
                     <li class="instructions__item">Vyberte si stroj, ze kterého chcete píšťalu adoptovat (I. manuál, II. manuál, nebo pedál).</li>
                     <li class="instructions__item">Pro vybraný stroj se zobrazí tabulka píšťal. V řádcích tabulky se
-                        vyskytují rejstříky (sady píšťal). Kliknutím na název rejstříku se zobrazí krátký komentář vysvětlující jeho charakter.</li>
+                        vyskytují rejstříky (sady píšťal). Přejetím myší přes název rejstříku (nebo klepnutím na něj) se zobrazí krátký komentář vysvětlující jeho charakter.</li>
                     <li class="instructions__item">Sloupce tabulky určují tón píšťaly pro každý z rejstříků. Píšťaly jsou barevně rozlišeny podle částky
                         (viz legenda pod výběrem stroje).</li>
                     <li class="instructions__item">Po vybrání píšťaly z tabulky se aktivuje tlačítko pro adopci píšťaly,
@@ -109,7 +109,7 @@
         <tbody class="pipe-table__body">
             <?php foreach($m['ranks'] as $r){ ?>
             <tr class="pipe-table__row">
-                <th scope="row" class="pipe-table__heading pipe-table__heading--left"<?= !empty($r['description']) ? ' data-desc="' . h($r['description']) . '" onclick="toggleRankTooltip(this)" style="cursor:pointer"' : '' ?>><?= $r['name'] ?></th>
+                <th scope="row" class="pipe-table__heading pipe-table__heading--left"<?= !empty($r['description']) ? ' data-desc="' . h($r['description']) . '" onmouseenter="hoverRankTooltip(this)" onmouseleave="leaveRankTooltip()" onclick="toggleRankTooltip(this)" style="cursor:pointer"' : '' ?>><?= $r['name'] ?></th>
                 <?php foreach($m['tones'] as $t){ $p = $r['pipes'][$t['id']] ?? null; ?>
                 <?php if($p === null){ ?>
                 <td class="pipe-table__cell"></td>
@@ -297,14 +297,9 @@
         document.getElementById("price-legend__tooltip").style.left = "-999em";
     }
 
-    var _rankTooltipSource = null;
-    function toggleRankTooltip(el) {
+    var _rankTooltipSource = null, _rankTooltipPinned = false;
+    function _showRankTooltip(el) {
         var tt = document.getElementById('rank-desc-tooltip');
-        if (_rankTooltipSource === el && tt.style.display !== 'none') {
-            tt.style.display = 'none';
-            _rankTooltipSource = null;
-            return;
-        }
         _rankTooltipSource = el;
         tt.textContent = el.getAttribute('data-desc');
         tt.style.visibility = 'hidden';
@@ -318,9 +313,27 @@
         tt.style.left = (rect.right + 14) + 'px';
         tt.style.visibility = 'visible';
     }
+    function hoverRankTooltip(el) { _showRankTooltip(el); }
+    function leaveRankTooltip() {
+        if (!_rankTooltipPinned) {
+            document.getElementById('rank-desc-tooltip').style.display = 'none';
+            _rankTooltipSource = null;
+        }
+    }
+    function toggleRankTooltip(el) {
+        if (_rankTooltipPinned && _rankTooltipSource === el) {
+            document.getElementById('rank-desc-tooltip').style.display = 'none';
+            _rankTooltipPinned = false;
+            _rankTooltipSource = null;
+        } else {
+            _showRankTooltip(el);
+            _rankTooltipPinned = true;
+        }
+    }
     document.addEventListener('click', function(e) {
         if (!e.target.closest('[data-desc]')) {
             document.getElementById('rank-desc-tooltip').style.display = 'none';
+            _rankTooltipPinned = false;
             _rankTooltipSource = null;
         }
     });
