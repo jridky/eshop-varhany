@@ -16,7 +16,7 @@
                 <ol class="instructions__item-list">
                     <li class="instructions__item">Vyberte si stroj, ze kterého chcete píšťalu adoptovat (I. manuál, II. manuál, nebo pedál).</li>
                     <li class="instructions__item">Pro vybraný stroj se zobrazí tabulka píšťal. V řádcích tabulky se
-                        vyskytují rejstříky (sady píšťal). Když se myší zastavíte na názvu rejstříku, objeví se krátký komentář vysvětlující jeho charakter.</li>
+                        vyskytují rejstříky (sady píšťal). Kliknutím na název rejstříku se zobrazí krátký komentář vysvětlující jeho charakter.</li>
                     <li class="instructions__item">Sloupce tabulky určují tón píšťaly pro každý z rejstříků. Píšťaly jsou barevně rozlišeny podle částky
                         (viz legenda pod výběrem stroje).</li>
                     <li class="instructions__item">Po vybrání píšťaly z tabulky se aktivuje tlačítko pro adopci píšťaly,
@@ -72,6 +72,8 @@
         </div>
     </div>
     <hr class="donation-page__line">
+    <style>#rank-desc-tooltip::before{content:'';position:absolute;left:-8px;top:50%;transform:translateY(-50%);border-width:8px 8px 8px 0;border-style:solid;border-color:transparent #333 transparent transparent;}</style>
+    <div id="rank-desc-tooltip" style="display:none; position:fixed; background:#333; color:#fff; padding:0.75rem 1rem; border-radius:4px; max-width:385px; font-size:0.875rem; z-index:200; line-height:1.5; box-shadow:0 2px 8px rgba(0,0,0,0.4); pointer-events:none"></div>
     <div class="__react_component_tooltip pipe-tooltip type-dark" id="pipe-table__tooltip" data-id="tooltip">
         <table>
             <tbody>
@@ -107,7 +109,7 @@
         <tbody class="pipe-table__body">
             <?php foreach($m['ranks'] as $r){ ?>
             <tr class="pipe-table__row">
-                <th scope="row" class="pipe-table__heading pipe-table__heading--left"<?= !empty($r['description']) ? ' title="' . h($r['description']) . '"' : '' ?>><?= $r['name'] ?></th>
+                <th scope="row" class="pipe-table__heading pipe-table__heading--left"<?= !empty($r['description']) ? ' data-desc="' . h($r['description']) . '" onclick="toggleRankTooltip(this)" style="cursor:pointer"' : '' ?>><?= $r['name'] ?></th>
                 <?php foreach($m['tones'] as $t){ $p = $r['pipes'][$t['id']] ?? null; ?>
                 <?php if($p === null){ ?>
                 <td class="pipe-table__cell"></td>
@@ -294,7 +296,35 @@
         document.getElementById("price-legend__tooltip").style.top = "-999em";
         document.getElementById("price-legend__tooltip").style.left = "-999em";
     }
-    
+
+    var _rankTooltipSource = null;
+    function toggleRankTooltip(el) {
+        var tt = document.getElementById('rank-desc-tooltip');
+        if (_rankTooltipSource === el && tt.style.display !== 'none') {
+            tt.style.display = 'none';
+            _rankTooltipSource = null;
+            return;
+        }
+        _rankTooltipSource = el;
+        tt.textContent = el.getAttribute('data-desc');
+        tt.style.visibility = 'hidden';
+        tt.style.display = 'block';
+        var rect = el.getBoundingClientRect();
+        var tH = tt.offsetHeight;
+        var top = rect.top + rect.height / 2 - tH / 2;
+        if (top < 8) top = 8;
+        if (top + tH > window.innerHeight - 8) top = window.innerHeight - tH - 8;
+        tt.style.top = top + 'px';
+        tt.style.left = (rect.right + 14) + 'px';
+        tt.style.visibility = 'visible';
+    }
+    document.addEventListener('click', function(e) {
+        if (!e.target.closest('[data-desc]')) {
+            document.getElementById('rank-desc-tooltip').style.display = 'none';
+            _rankTooltipSource = null;
+        }
+    });
+
     function showModal(){
         document.getElementsByClassName("modal")[0].style.display = "flex";
     }
