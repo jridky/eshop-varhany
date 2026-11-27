@@ -16,6 +16,18 @@
                 <h3 class="manual-edit__preview-rank-title">
                     <?= $rank['existing_id'] === null ? '+ Nový rejstřík: ' : '~ Rejstřík: ' ?><?= h($rank['name']) ?>
                 </h3>
+                <?php if($rank['existing_id'] === null && !empty($rank['name_de'])): ?>
+                <p class="manual-edit__preview-meta">Německý název: <?= h($rank['name_de']) ?></p>
+                <?php endif; ?>
+                <?php if(!empty($rank['name_de_changed'])): ?>
+                <p class="manual-edit__preview-meta">~ Německý název: <strong><?= h($rank['name_de']) ?></strong></p>
+                <?php endif; ?>
+                <?php if($rank['existing_id'] === null && !empty($rank['description'])): ?>
+                <p class="manual-edit__preview-meta">Popis: <?= h($rank['description']) ?></p>
+                <?php endif; ?>
+                <?php if(!empty($rank['description_changed'])): ?>
+                <p class="manual-edit__preview-meta">~ Popis: <strong><?= h($rank['description']) ?></strong></p>
+                <?php endif; ?>
                 <ul class="manual-edit__preview-pipes">
                     <?php foreach($rank['pipes'] as $pipe): ?>
                     <li>

@@ -74,7 +74,7 @@
         <tbody class="pipe-table__body">
             <?php foreach($m['ranks'] as $r){ ?>
             <tr class="pipe-table__row">
-                <th scope="row" class="pipe-table__heading pipe-table__heading--left"><?= $r['name'] ?></th>
+                <th scope="row" class="pipe-table__heading pipe-table__heading--left"<?= !empty($r['description']) ? ' title="' . h($r['description']) . '"' : '' ?>><?= $r['name'] ?></th>
                 <?php foreach($m['tones'] as $t){ $p = $r['pipes'][$t['id']] ?? null; ?>
                 <?php if($p === null){ ?>
                 <td class="pipe-table__cell"></td>

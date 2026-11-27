@@ -174,11 +174,11 @@ class AdminController extends AppController
         }
 
         $tones = $connection->execute("SELECT id, name FROM tone WHERE machine_id = ? ORDER BY id", [$machineId])->fetchAll("assoc");
-        $ranks = $connection->execute("SELECT id, name FROM rank WHERE machine_id = ? ORDER BY name, id", [$machineId])->fetchAll("assoc");
+        $ranks = $connection->execute("SELECT id, name, name_de, description FROM rank WHERE machine_id = ? ORDER BY name, id", [$machineId])->fetchAll("assoc");
 
         $buf = fopen('php://temp', 'r+');
 
-        $header = ["Rejstřík / Tón"];
+        $header = ["Rejstřík / Tón", "Německý název", "textový popis"];
         foreach($tones as $tone) $header[] = $tone['name'];
         fputcsv($buf, $header);
 
@@ -189,7 +189,7 @@ class AdminController extends AppController
             )->fetchAll("assoc");
             $pipesByTone = array_column($pipes, null, 'tone_id');
 
-            $row = [$rank['name']];
+            $row = [$rank['name'], $rank['name_de'] ?? '', $rank['description'] ?? ''];
             foreach($tones as $tone){
                 if(!isset($pipesByTone[$tone['id']])){
                     $row[] = "";
@@ -235,14 +235,17 @@ class AdminController extends AppController
                 'id', 'name'
             );
             $ranksByName = array_column(
-                $connection->execute("SELECT id, name FROM rank WHERE machine_id = ?", [$machineId])->fetchAll("assoc"),
-                'id', 'name'
+                $connection->execute("SELECT id, name, name_de, description FROM rank WHERE machine_id = ?", [$machineId])->fetchAll("assoc"),
+                null, 'name'
             );
 
-            $diff = ['machineId' => $machineId, 'machineName' => $machine['name'], 'ranks' => [], 'warnings' => []];
+            if(count($data[0]) < 3 || trim((string)$data[0][1]) !== 'Německý název'){
+                throw new \Exception("CSV musí být v novém formátu: první řádek \"Rejstřík / Tón\", \"Německý název\", \"textový popis\", tóny…");
+            }
+            $diff = ['machineId' => $machineId, 'machineName' => $machine['name'], 'hasMetaCols' => true, 'ranks' => [], 'warnings' => []];
 
             $csvTones = [];
-            for($i = 1; $i < count($data[0]); $i++){
+            for($i = 3; $i < count($data[0]); $i++){
                 $toneName = trim((string)$data[0][$i]);
                 if($toneName === '') continue;
                 $csvTones[$i] = ['name' => $toneName, 'id' => $tonesByName[$toneName] ?? null];
@@ -252,8 +255,15 @@ class AdminController extends AppController
                 $rankName = trim((string)$data[$i][0]);
                 if($rankName === '') continue;
 
-                $existingRankId = $ranksByName[$rankName] ?? null;
-                $rankEntry = ['name' => $rankName, 'existing_id' => $existingRankId, 'pipes' => []];
+                $nameDe = trim((string)$data[$i][1]);
+                $description = trim((string)$data[$i][2]);
+                $existingRank = $ranksByName[$rankName] ?? null;
+                $existingRankId = $existingRank ? (int)$existingRank['id'] : null;
+                $rankEntry = ['name' => $rankName, 'existing_id' => $existingRankId, 'name_de' => $nameDe, 'description' => $description, 'pipes' => []];
+                if($existingRank !== null){
+                    $rankEntry['name_de_changed'] = $nameDe !== ($existingRank['name_de'] ?? '');
+                    $rankEntry['description_changed'] = $description !== ($existingRank['description'] ?? '');
+                }
 
                 $pipesByTone = [];
                 if($existingRankId !== null){
@@ -266,7 +276,7 @@ class AdminController extends AppController
                     );
                 }
 
-                for($j = 1; $j < count($data[$i]); $j++){
+                for($j = 3; $j < count($data[$i]); $j++){
                     if(!isset($csvTones[$j])) continue;
                     $cellValue = trim((string)$data[$i][$j]);
                     if($cellValue === '' || strtolower($cellValue) === 'obsazeno') continue;
@@ -290,7 +300,8 @@ class AdminController extends AppController
                     }
                 }
 
-                if($existingRankId === null || !empty($rankEntry['pipes'])){
+                $hasMetaChange = ($rankEntry['name_de_changed'] ?? false) || ($rankEntry['description_changed'] ?? false);
+                if($existingRankId === null || !empty($rankEntry['pipes']) || $hasMetaChange){
                     $diff['ranks'][] = $rankEntry;
                 }
             }
@@ -330,11 +341,20 @@ class AdminController extends AppController
 
             foreach($diff['ranks'] as $rank){
                 if($rank['existing_id'] === null){
-                    $rankId = $connection->execute("INSERT INTO rank (machine_id, name) VALUES (?, ?)", [$machineId, $rank['name']])->lastInsertId();
+                    $rankId = $connection->execute(
+                        "INSERT INTO rank (machine_id, name, name_de, description) VALUES (?, ?, ?, ?)",
+                        [$machineId, $rank['name'], $rank['name_de'] ?? '', $rank['description'] ?? '']
+                    )->lastInsertId();
                     $stats['ranks_created']++;
                 } else {
                     $rankId = $rank['existing_id'];
                     $stats['ranks_updated']++;
+                    if(!empty($diff['hasMetaCols']) && (($rank['name_de_changed'] ?? false) || ($rank['description_changed'] ?? false))){
+                        $connection->execute(
+                            "UPDATE rank SET name_de = ?, description = ? WHERE id = ?",
+                            [$rank['name_de'] ?? '', $rank['description'] ?? '', $rankId]
+                        );
+                    }
                 }
 
                 foreach($rank['pipes'] as $pipe){
@@ -432,9 +452,12 @@ class AdminController extends AppController
                 $file = IOFactory::load($_FILES['machine']['tmp_name']);
                 $data = $file->getActiveSheet()->toArray(NULL,TRUE,FALSE,FALSE);
 
+                if(count($data[0]) < 3 || trim((string)$data[0][1]) !== 'Německý název'){
+                    throw new \Exception("CSV musí být v novém formátu: první řádek \"Rejstřík / Tón\", \"Německý název\", \"textový popis\", tóny…");
+                }
+
                 $tunes = array();
-                //process tunes
-                for($i = 1; $i < sizeof($data[0]); $i++){
+                for($i = 3; $i < sizeof($data[0]); $i++){
                     $tuneId = $connection->execute("SELECT id FROM tone WHERE name LIKE BINARY ? AND machine_id = ?", [$data[0][$i], $machineId])->fetch("assoc");
                     if($tuneId == null){
                         $tunes[$i] = $connection->execute("INSERT INTO tone (name, machine_id) VALUES (?, ?)", [$data[0][$i], $machineId])->lastInsertId();
@@ -444,22 +467,27 @@ class AdminController extends AppController
                 }
 
                 for($i = 1; $i < sizeof($data); $i++){
-                    $rankId = 0;
-                    for($j = 0; $j < sizeof($data[$i]); $j++){
-                        if($j == 0){
-                            $rankId = $connection->execute("INSERT INTO rank (machine_id, name) VALUES (?, ?)", [$machineId, $data[$i][$j]])->lastInsertId();
-                        } else {
-                            $price = trim((string)$data[$i][$j]);
-                            if ($price === "") {
-                                // prázdná buňka = píšťala není k adopci, nevytváří se
-                                continue;
-                            }
-                            if (!is_numeric($price)) {
-                                throw new \Exception("Neplatná cena \"" . $price . "\" (řádek " . ($i + 1) . ", sloupec " . ($j + 1) . ")");
-                            }
-                            $connection->execute("INSERT INTO pipe (rank_id, machine_id, tone_id, price, state) VALUES (" . $rankId . ", " . $machineId . ", " . $tunes[$j] . ", " . (float)$price . ", 0)");
+                    if(trim((string)$data[$i][0]) === '') continue;
+                    $rankName = $data[$i][0];
+                    $nameDe = trim((string)$data[$i][1]);
+                    $description = trim((string)$data[$i][2]);
+                    $rankId = $connection->execute(
+                        "INSERT INTO rank (machine_id, name, name_de, description) VALUES (?, ?, ?, ?)",
+                        [$machineId, $rankName, $nameDe, $description]
+                    )->lastInsertId();
+
+                    for($j = 3; $j < sizeof($data[$i]); $j++){
+                        $price = trim((string)$data[$i][$j]);
+                        if ($price === "" || strtolower($price) === 'obsazeno') continue;
+                        if (!is_numeric($price)) {
+                            throw new \Exception("Neplatná cena \"" . $price . "\" (řádek " . ($i + 1) . ", sloupec " . ($j + 1) . ")");
                         }
-                    } 
+                        if (!isset($tunes[$j])) continue;
+                        $connection->execute(
+                            "INSERT INTO pipe (rank_id, machine_id, tone_id, price, state) VALUES (?, ?, ?, ?, 0)",
+                            [$rankId, $machineId, $tunes[$j], (float)$price]
+                        );
+                    }
                 }
                 $connection->execute("COMMIT;");
                 $_SESSION['successMessage'][] = "CSV úspěšně nahráno";
@@ -501,7 +529,7 @@ class AdminController extends AppController
             $tones = $connection->execute("SELECT id, name FROM tone WHERE machine_id = " . $m['id'] . " ORDER BY id")->fetchAll("assoc");
             $machines[$key]['tones'] = $tones;
 
-            $ranks = $connection->execute("SELECT id, name FROM rank WHERE machine_id = " . $m['id'] . " ORDER BY name, id")->fetchAll("assoc");
+            $ranks = $connection->execute("SELECT id, name, description FROM rank WHERE machine_id = " . $m['id'] . " ORDER BY name, id")->fetchAll("assoc");
 
             foreach($ranks as $rkey => $r){
                 $pipes = $connection->execute("SELECT id, price, state, owner, tone_id FROM pipe WHERE machine_id = " . $m['id'] . " AND rank_id = " . $r['id'] . " ORDER BY tone_id")->fetchAll("assoc");

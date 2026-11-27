@@ -140,7 +140,7 @@ class AdoptionController extends AppController
             $tones = $connection->execute("SELECT id, name FROM tone WHERE machine_id = " . $m['id'] . " ORDER BY id")->fetchAll("assoc");
             $machines[$key]['tones'] = $tones;
 
-            $ranks = $connection->execute("SELECT id, name FROM rank WHERE machine_id = " . $m['id'] . " ORDER BY name, id")->fetchAll("assoc");
+            $ranks = $connection->execute("SELECT id, name, description FROM rank WHERE machine_id = " . $m['id'] . " ORDER BY name, id")->fetchAll("assoc");
 
             foreach($ranks as $rkey => $r){
                 $pipes = $connection->execute("SELECT id, price, state, owner, tone_id FROM pipe WHERE machine_id = " . $m['id'] . " AND rank_id = " . $r['id'] . " ORDER BY tone_id")->fetchAll("assoc");

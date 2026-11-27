@@ -14,9 +14,10 @@
                     </button>
                 </div>
                 <ol class="instructions__item-list">
-                    <li class="instructions__item">Vyberte si stroj, ze kterého chcete píšťalu adoptovat.</li>
+                    <li class="instructions__item">Vyberte si stroj, ze kterého chcete píšťalu adoptovat (I. manuál, II. manuál, nebo pedál).</li>
                     <li class="instructions__item">Pro vybraný stroj se zobrazí tabulka píšťal. V řádcích tabulky se
-                        vyskytují rejstříky (sady píšťal). Sloupce tabulky určují tón píšťaly. Píšťaly jsou barevně rozlišeny podle částky
+                        vyskytují rejstříky (sady píšťal). Když se myší zastavíte na názvu rejstříku, objeví se krátký komentář vysvětlující jeho charakter.</li>
+                    <li class="instructions__item">Sloupce tabulky určují tón píšťaly pro každý z rejstříků. Píšťaly jsou barevně rozlišeny podle částky
                         (viz legenda pod výběrem stroje).</li>
                     <li class="instructions__item">Po vybrání píšťaly z tabulky se aktivuje tlačítko pro adopci píšťaly,
                         které Vás nasměruje na formulář.</li>
@@ -106,7 +107,7 @@
         <tbody class="pipe-table__body">
             <?php foreach($m['ranks'] as $r){ ?>
             <tr class="pipe-table__row">
-                <th scope="row" class="pipe-table__heading pipe-table__heading--left"><?= $r['name'] ?></th>
+                <th scope="row" class="pipe-table__heading pipe-table__heading--left"<?= !empty($r['description']) ? ' title="' . h($r['description']) . '"' : '' ?>><?= $r['name'] ?></th>
                 <?php foreach($m['tones'] as $t){ $p = $r['pipes'][$t['id']] ?? null; ?>
                 <?php if($p === null){ ?>
                 <td class="pipe-table__cell"></td>
